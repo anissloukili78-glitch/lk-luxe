@@ -241,7 +241,7 @@ function ProductCard({ p, onBuy, isCatalog }) {
         <div style={{ fontSize: 9, color: C.textLight, letterSpacing: 3, textTransform: "uppercase", marginBottom: 4, fontFamily: "Jost, sans-serif" }}>{p.brand}</div>
         <div style={{ fontSize: 18, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, lineHeight: 1.2, marginBottom: 4 }}>{p.name}</div>
         <div style={{ fontSize: 12, color: C.textMid, marginBottom: 10, fontFamily: "Jost, sans-serif" }}>{p.color}</div>
-        <div style={{ fontSize: 12, color: C.textLight, lineHeight: 1.6, marginBottom: 16, fontFamily: "Jost, sans-serif", minHeight: 36 }}>{p.desc}</div>
+        <div style={{ fontSize: 12, color: C.textLight, lineHeight: 1.6, marginBottom: 16, fontFamily: "Jost, sans-serif", minHeight: 36 }}>{p.description}</div>
         {isCatalog
           ? <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 16 }}>
             <div><div style={{ fontSize: 9, color: C.textLight, letterSpacing: 2, marginBottom: 2 }}>PRIX ESTIMÉ</div><div style={{ fontSize: 22, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600 }}>{fmt(p.estimatedPrice)}</div></div>
@@ -696,8 +696,8 @@ function AdminApp({ onLogout }) {
   const [emailPreview, setEmailPreview] = useState(null);
   const [newCat, setNewCat] = useState("");
   const [viewingCustom, setViewingCustom] = useState(null);
-  const [sf, setSfRaw] = useState({ name: "", brand: "", category: "", color: "", price: "", ref: "", desc: "", img: null });
-  const [cf, setCfRaw] = useState({ name: "", brand: "", category: "", color: "", estimatedPrice: "", deposit: "", ref: "", leadTime: "", desc: "", img: null, sizes: "" });
+  const [sf, setSfRaw] = useState({ name: "", brand: "", category: "", color: "", price: "", ref: "", description: "", img: null });
+  const [cf, setCfRaw] = useState({ name: "", brand: "", category: "", color: "", estimatedPrice: "", deposit: "", ref: "", leadTime: "", description: "", img: null, sizes: "" });
   const ssf = k => e => setSfRaw(f => ({ ...f, [k]: typeof e === "string" ? e : e.target.value }));
   const scf = k => e => setCfRaw(f => ({ ...f, [k]: typeof e === "string" ? e : e.target.value }));
 
@@ -726,7 +726,7 @@ function AdminApp({ onLogout }) {
   };
 
   const acceptCustomRequest = (order) => {
-    setCfRaw({ name: "", brand: "", category: order.productCategory || categories[0] || "", color: "", estimatedPrice: "", deposit: "", ref: "", leadTime: "", desc: order.clientSize ? `Pointure client : ${order.clientSize}` : "", img: order.productImg || null, sizes: order.clientSize || "" });
+    setCfRaw({ name: "", brand: "", category: order.productCategory || categories[0] || "", color: "", estimatedPrice: "", deposit: "", ref: "", leadTime: "", description: order.clientSize ? `Pointure client : ${order.clientSize}` : "", img: order.productImg || null, sizes: order.clientSize || "" });
     updateOrder(order.id, { status: "en_attente" });
     setTab("catalog");
     setShowAddCatalog(true);
@@ -736,7 +736,7 @@ function AdminApp({ onLogout }) {
     if (!sf.name || !sf.price) return;
     const { data } = await supabase.from("stock").insert([{ ...sf, price: +sf.price, available: true }]).select();
     if (data) setStock(s => [data[0], ...s]);
-    setSfRaw({ name: "", brand: "", category: categories[0] || "", color: "", price: "", ref: "", desc: "", img: null });
+    setSfRaw({ name: "", brand: "", category: categories[0] || "", color: "", price: "", ref: "", description: "", img: null });
     setShowAddStock(false);
   };
 
@@ -744,17 +744,17 @@ function AdminApp({ onLogout }) {
     if (!cf.name || !cf.estimatedPrice) return;
     const { data } = await supabase.from("catalog").insert([{ ...cf, estimatedPrice: +cf.estimatedPrice, deposit: +cf.deposit }]).select();
     if (data) setCatalog(c => [{ ...data[0], sizes: cf.sizes ? cf.sizes.split(",").map(x => x.trim()).filter(Boolean) : [] }, ...c]);
-    setCfRaw({ name: "", brand: "", category: categories[0] || "", color: "", estimatedPrice: "", deposit: "", ref: "", leadTime: "", desc: "", img: null, sizes: "" });
+    setCfRaw({ name: "", brand: "", category: categories[0] || "", color: "", estimatedPrice: "", deposit: "", ref: "", leadTime: "", description: "", img: null, sizes: "" });
     setShowAddCatalog(false);
   };
 
   const saveEdit = async () => {
     if (editType === "stock") {
-      await supabase.from("stock").update({ name: editItem.name, brand: editItem.brand, price: +editItem.price, color: editItem.color, ref: editItem.ref, desc: editItem.desc, img: editItem.img }).eq("id", editItem.id);
+      await supabase.from("stock").update({ name: editItem.name, brand: editItem.brand, price: +editItem.price, color: editItem.color, ref: editItem.ref, desc: editItem.description, img: editItem.img }).eq("id", editItem.id);
       setStock(s => s.map(p => p.id === editItem.id ? { ...editItem, price: +editItem.price } : p));
     } else {
       const sizesStr = typeof editItem.sizes === "string" ? editItem.sizes : (editItem.sizes || []).join(", ");
-      await supabase.from("catalog").update({ name: editItem.name, brand: editItem.brand, estimatedPrice: +editItem.estimatedPrice, deposit: +editItem.deposit, leadTime: editItem.leadTime, color: editItem.color, ref: editItem.ref, desc: editItem.desc, img: editItem.img, sizes: sizesStr }).eq("id", editItem.id);
+      await supabase.from("catalog").update({ name: editItem.name, brand: editItem.brand, estimatedPrice: +editItem.estimatedPrice, deposit: +editItem.deposit, leadTime: editItem.leadTime, color: editItem.color, ref: editItem.ref, desc: editItem.description, img: editItem.img, sizes: sizesStr }).eq("id", editItem.id);
       setCatalog(c => c.map(p => p.id === editItem.id ? { ...editItem, sizes: sizesStr.split(",").map(x => x.trim()).filter(Boolean) } : p));
     }
     setEditItem(null);
@@ -979,7 +979,7 @@ function AdminApp({ onLogout }) {
             <Sel label="Catégorie" value={sf.category || categories[0] || ""} onChange={ssf("category")} options={categories.map(c => ({ v: c, l: `${getEmoji(c)} ${c}` }))} />
             <Field label="Couleur / Matière" value={sf.color} onChange={ssf("color")} />
           </div>
-          <Field label="Description" value={sf.desc} onChange={ssf("desc")} rows={3} />
+          <Field label="Description" value={sf.description} onChange={ssf("description")} rows={3} />
           <ImgUpload value={sf.img} onChange={(v) => setSfRaw(f => ({ ...f, img: v }))} />
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
             <Btn variant="ghost" onClick={() => setShowAddStock(false)}>Annuler</Btn>
@@ -1003,7 +1003,7 @@ function AdminApp({ onLogout }) {
           {isShoeCategory(cf.category) && (
             <Field label="Tailles disponibles 👟" value={cf.sizes} onChange={scf("sizes")} placeholder="ex: 36, 37, 38, 39, 40" hint="Séparez les tailles par des virgules." />
           )}
-          <Field label="Description" value={cf.desc} onChange={scf("desc")} rows={3} />
+          <Field label="Description" value={cf.description} onChange={scf("description")} rows={3} />
           <ImgUpload value={cf.img} onChange={(v) => setCfRaw(f => ({ ...f, img: v }))} />
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
             <Btn variant="ghost" onClick={() => setShowAddCatalog(false)}>Annuler</Btn>
@@ -1030,7 +1030,7 @@ function AdminApp({ onLogout }) {
           {editType === "catalog" && isShoeCategory(editItem.category) && (
             <Field label="Tailles disponibles 👟" value={typeof editItem.sizes === "string" ? editItem.sizes : (editItem.sizes || []).join(", ")} onChange={e => setEditItem(i => ({ ...i, sizes: e.target.value }))} placeholder="ex: 36, 37, 38, 39, 40" hint="Séparez par des virgules." />
           )}
-          <Field label="Description" value={editItem.desc} onChange={e => setEditItem(i => ({ ...i, desc: e.target.value }))} rows={3} />
+          <Field label="Description" value={editItem.description} onChange={e => setEditItem(i => ({ ...i, description: e.target.value }))} rows={3} />
           <ImgUpload value={editItem.img} onChange={(v) => setEditItem(i => ({ ...i, img: v }))} label="Modifier l'image" />
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
             <Btn variant="ghost" onClick={() => setEditItem(null)}>Annuler</Btn>
