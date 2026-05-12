@@ -389,8 +389,8 @@ function MyOrders({ onClose, prefillEmail }) {
 
   const fetchOrders = async () => {
     setLoading(true);
-    const { data } = await supabase.from("orders").select("*").eq("email", email.toLowerCase()).neq("status", "annulee").order("created_at", { ascending: false });
-    setOrders(data || []);
+    const { data } = await supabase.from("orders").select("*").eq("email", email.toLowerCase()).order("created_at", { ascending: false });
+    setOrders((data || []).filter(o => o.status !== "annulee" && o.status !== "custom_request"));
     setLoading(false);
   };
 
@@ -734,15 +734,18 @@ function AdminApp({ onLogout }) {
 
   const addStock = async () => {
     if (!sf.name || !sf.price) return;
-    const { data } = await supabase.from("stock").insert([{ ...sf, price: +sf.price, available: true }]).select();
-    if (data) setStock(s => [data[0], ...s]);
+    const { data, error } = await supabase.from("stock").insert([{ ...sf, price: +sf.price, available: true }]).select();
+    if (error) { console.error("addStock error:", error); return; }
+    if (data) setStock(s => [{ ...data[0], sizes: [] }, ...s]);
     setSfRaw({ name: "", brand: "", category: categories[0] || "", color: "", price: "", ref: "", description: "", img: null });
     setShowAddStock(false);
   };
 
   const addCatalog = async () => {
     if (!cf.name || !cf.estimatedPrice) return;
-    const { data } = await supabase.from("catalog").insert([{ ...cf, estimatedPrice: +cf.estimatedPrice, deposit: +cf.deposit }]).select();
+    const insertData = { name: cf.name, brand: cf.brand, category: cf.category, color: cf.color, estimatedPrice: +cf.estimatedPrice, deposit: +cf.deposit, ref: cf.ref, leadTime: cf.leadTime, description: cf.description, img: cf.img, sizes: cf.sizes || "" };
+    const { data, error } = await supabase.from("catalog").insert([insertData]).select();
+    if (error) { console.error("addCatalog error:", error); return; }
     if (data) setCatalog(c => [{ ...data[0], sizes: cf.sizes ? cf.sizes.split(",").map(x => x.trim()).filter(Boolean) : [] }, ...c]);
     setCfRaw({ name: "", brand: "", category: categories[0] || "", color: "", estimatedPrice: "", deposit: "", ref: "", leadTime: "", description: "", img: null, sizes: "" });
     setShowAddCatalog(false);
@@ -774,7 +777,7 @@ function AdminApp({ onLogout }) {
   const readyCount = orders.filter(o => o.status === "disponible").length;
   const soldeCount = orders.filter(o => o.status === "solde_recu").length;
   const payCount = orders.filter(o => o.status === "paiement_a_verifier").length;
-  const customCount = orders.filter(o => o.isCustom && o.status === "custom_request").length;
+  const customCount = orders.filter(o => ( o.isCustom === true || o.isCustom === "true") && o.status === "custom_request").length;
 
   return (
     <div style={{ minHeight: "100vh", background: C.bgDark, fontFamily: "Jost, sans-serif" }}>
@@ -804,9 +807,9 @@ function AdminApp({ onLogout }) {
 
           {tab === "orders" && (
             <div>
-              {orders.filter(o => !o.isCustom).length === 0
+              {orders.filter(o => !o.isCustom && o.status !== "custom_request").length === 0
                 ? <div style={{ textAlign: "center", padding: 60, color: C.textLight }}>Aucune commande.</div>
-                : orders.filter(o => !o.isCustom).map(order => (
+                : orders.filter(o => !o.isCustom && o.status !== "custom_request").map(order => (
                   <div key={order.id} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: 22, marginBottom: 14 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
                       <div>
@@ -850,9 +853,9 @@ function AdminApp({ onLogout }) {
                 <span style={{ fontSize: 24 }}>🔍</span>
                 <div style={{ fontSize: 13, color: "#6B4D7E", lineHeight: 1.7, fontFamily: "Jost, sans-serif" }}>Demandes clients avec photo. <strong>Aucun acompte encaissé.</strong> Contactez-les pour disponibilité et prix.</div>
               </div>
-              {orders.filter(o => o.isCustom).length === 0
+              {orders.filter(o => o.isCustom === true || o.isCustom === "true" || o.status === "custom_request").length === 0
                 ? <div style={{ textAlign: "center", padding: 60, color: C.textLight }}>Aucune demande personnalisée.</div>
-                : orders.filter(o => o.isCustom).map(order => (
+                : orders.filter(o => o.isCustom === true || o.isCustom === "true" || o.status === "custom_request").map(order => (
                   <div key={order.id} style={{ background: C.surface, border: `2px solid #D4B8E0`, borderRadius: 14, padding: 22, marginBottom: 14 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginBottom: 16 }}>
                       <div style={{ flex: 1 }}>
