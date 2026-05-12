@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
 
-// â”€â”€ SUPABASE CONFIG â”€â”€
+// ── SUPABASE CONFIG ──
 const SUPABASE_URL = "https://estfmnycqtzvyphzewwr.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzdGZtbnljcXR6dnlwaHpld3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcwMDQ5NTcsImV4cCI6MjA2MjU4MDk1N30.eyJpc3MiOiJzdXBhYmFzZSJ9";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzdGZtbnljcXR6dnlwaHpld3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MjY2NzMsImV4cCI6MjA5NDEwMjY3M30.GjB7HCkIpDtHjjdXmxmErjmdxUj3BPLhKhjcXOMUvnY";
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const ADMIN_PWD = "jasmineDanissL69";
@@ -22,13 +22,13 @@ const FONTS = `@import url('https://fonts.googleapis.com/css2?family=Cormorant:i
 const INIT_CATS = ["Sacs", "Pochettes", "Claquettes", "Ceintures", "Sacoches", "Baskets", "Talons"];
 const SHOE_CATS = ["Claquettes", "Baskets", "Talons"];
 
-const fmt = (n) => Number(n).toLocaleString("fr-FR") + " â‚¬";
+const fmt = (n) => Number(n).toLocaleString("fr-FR") + " €";
 const uid = () => "LK-" + Date.now().toString(36).toUpperCase();
-const EMOJI_MAP = { "Sacs": "ðŸ‘œ", "Pochettes": "ðŸ‘›", "Claquettes": "ðŸ‘¡", "Ceintures": "ðŸ‘”", "Sacoches": "ðŸŽ’", "Baskets": "ðŸ‘Ÿ", "Talons": "ðŸ‘ ", default: "âœ¨" };
+const EMOJI_MAP = { "Sacs": "👜", "Pochettes": "👛", "Claquettes": "👡", "Ceintures": "👔", "Sacoches": "🎒", "Baskets": "👟", "Talons": "👠", default: "✨" };
 const getEmoji = (cat) => EMOJI_MAP[cat] || EMOJI_MAP.default;
 const isShoeCategory = (cat) => SHOE_CATS.includes(cat);
 
-// â”€â”€ UI PRIMITIVES â”€â”€
+// ── UI PRIMITIVES ──
 function Modal({ title, onClose, children, wide }) {
   useEffect(() => {
     const h = (e) => e.key === "Escape" && onClose();
@@ -41,7 +41,7 @@ function Modal({ title, onClose, children, wide }) {
       <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 20, padding: "36px 40px", maxWidth: wide ? 680 : 520, width: "100%", maxHeight: "92vh", overflowY: "auto", boxShadow: "0 32px 80px rgba(44,31,20,0.18)" }} onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
           <h2 style={{ margin: 0, fontSize: 16, color: C.text, letterSpacing: 3, textTransform: "uppercase", fontFamily: "Jost, sans-serif", fontWeight: 500 }}>{title}</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: C.textLight, cursor: "pointer", fontSize: 28, lineHeight: 1, padding: "0 4px" }}>Ã—</button>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: C.textLight, cursor: "pointer", fontSize: 28, lineHeight: 1, padding: "0 4px" }}>×</button>
         </div>
         {children}
       </div>
@@ -95,10 +95,10 @@ function Btn({ children, onClick, variant = "primary", sm, full, disabled }) {
 
 function StatusPill({ s }) {
   const m = {
-    en_attente: [C.gold, "En attente"], commande: [C.accentDark, "CommandÃ©"],
-    paiement_a_verifier: ["#E67E22", "Paiement Ã  vÃ©rifier"], paiement_confirme: ["#27AE60", "Paiement confirmÃ© âœ“"],
-    disponible: [C.green, "Disponible"], solde_recu: ["#2E7D52", "Solde reÃ§u âœ“"],
-    expediee: ["#4A6B50", "ExpÃ©diÃ©e"], annulee: [C.red, "AnnulÃ©e"], custom_request: ["#8B6B9E", "Demande perso"],
+    en_attente: [C.gold, "En attente"], commande: [C.accentDark, "Commandé"],
+    paiement_a_verifier: ["#E67E22", "Paiement à vérifier"], paiement_confirme: ["#27AE60", "Paiement confirmé ✓"],
+    disponible: [C.green, "Disponible"], solde_recu: ["#2E7D52", "Solde reçu ✓"],
+    expediee: ["#4A6B50", "Expédiée"], annulee: [C.red, "Annulée"], custom_request: ["#8B6B9E", "Demande perso"],
   };
   const [col, label] = m[s] || [C.textLight, s];
   return <span style={{ background: col + "18", color: col, border: `1px solid ${col}35`, padding: "3px 12px", borderRadius: 20, fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", fontFamily: "Jost, sans-serif" }}>{label}</span>;
@@ -117,7 +117,7 @@ function ImgUpload({ value, onChange, label }) {
     <div style={{ marginBottom: 18 }}>
       <label style={{ display: "block", fontSize: 10, letterSpacing: 2.5, color: C.accentDark, textTransform: "uppercase", marginBottom: 7, fontFamily: "Jost, sans-serif", fontWeight: 500 }}>{label || "Image du produit"}</label>
       <div style={{ border: `2px dashed ${C.borderDark}`, borderRadius: 12, padding: 20, textAlign: "center", background: C.bg, cursor: "pointer" }} onClick={() => ref.current && ref.current.click()}>
-        {value ? <img src={value} alt="" style={{ maxHeight: 120, maxWidth: "100%", borderRadius: 8, objectFit: "cover" }} /> : <div style={{ color: C.textLight, fontSize: 13 }}>ðŸ“· Cliquer pour ajouter une image</div>}
+        {value ? <img src={value} alt="" style={{ maxHeight: 120, maxWidth: "100%", borderRadius: 8, objectFit: "cover" }} /> : <div style={{ color: C.textLight, fontSize: 13 }}>📷 Cliquer pour ajouter une image</div>}
         <input ref={ref} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
       </div>
     </div>
@@ -133,31 +133,31 @@ function Loader() {
   );
 }
 
-// â”€â”€ CUSTOM REQUEST CARD â”€â”€
+// ── CUSTOM REQUEST CARD ──
 function CustomRequestCard({ onRequest }) {
   const [hover, setHover] = useState(false);
   return (
     <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
       style={{ background: hover ? `linear-gradient(145deg,#F5EEF8,#EDE4F2)` : C.surface, border: `2px dashed ${hover ? "#8B6B9E" : C.borderDark}`, borderRadius: 16, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 320, padding: 32, textAlign: "center", cursor: "pointer", transition: "all .25s", transform: hover ? "translateY(-4px)" : "none" }}
       onClick={onRequest}>
-      <div style={{ fontSize: 52, marginBottom: 16 }}>ðŸ”</div>
+      <div style={{ fontSize: 52, marginBottom: 16 }}>🔍</div>
       <div style={{ fontSize: 9, letterSpacing: 3, color: "#8B6B9E", textTransform: "uppercase", marginBottom: 8, fontFamily: "Jost, sans-serif", fontWeight: 600 }}>Vous ne trouvez pas ?</div>
-      <div style={{ fontSize: 20, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, marginBottom: 10 }}>Commande personnalisÃ©e</div>
-      <div style={{ fontSize: 12, color: C.textMid, lineHeight: 1.8, fontFamily: "Jost, sans-serif", marginBottom: 20 }}>Envoyez-nous une photo de l'article souhaitÃ© et nous le trouverons pour vous.</div>
-      <div style={{ background: "linear-gradient(135deg,#8B6B9E,#6B4D7E)", color: C.white, padding: "10px 24px", borderRadius: 10, fontSize: 11, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", fontFamily: "Jost, sans-serif" }}>Faire une demande â†’</div>
+      <div style={{ fontSize: 20, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, marginBottom: 10 }}>Commande personnalisée</div>
+      <div style={{ fontSize: 12, color: C.textMid, lineHeight: 1.8, fontFamily: "Jost, sans-serif", marginBottom: 20 }}>Envoyez-nous une photo de l'article souhaité et nous le trouverons pour vous.</div>
+      <div style={{ background: "linear-gradient(135deg,#8B6B9E,#6B4D7E)", color: C.white, padding: "10px 24px", borderRadius: 10, fontSize: 11, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", fontFamily: "Jost, sans-serif" }}>Faire une demande →</div>
     </div>
   );
 }
 
-// â”€â”€ CUSTOM REQUEST FORM â”€â”€
+// ── CUSTOM REQUEST FORM ──
 const PROCESS_STEPS = [
-  { icon: "ðŸ“¸", text: "Tu nous envoies la photo du produit voulu" },
-  { icon: "ðŸ¤", text: "On nÃ©gocie le prix avec le fournisseur" },
-  { icon: "ðŸ’¶", text: "On te propose le prix final" },
-  { icon: "âœ…", text: "Tu valides ou non la commande" },
-  { icon: "ðŸ’³", text: "Une fois validÃ© : paiement d'un acompte obligatoire pour passer la commande" },
-  { icon: "ðŸŽ¥", text: "Le fournisseur nous envoie des vidÃ©os + contrÃ´le qualitÃ©" },
-  { icon: "ðŸ‘", text: "Tu confirmes : oui ou non â€” Refus = acompte remboursÃ© intÃ©gralement" },
+  { icon: "📸", text: "Tu nous envoies la photo du produit voulu" },
+  { icon: "🤝", text: "On négocie le prix avec le fournisseur" },
+  { icon: "💶", text: "On te propose le prix final" },
+  { icon: "✅", text: "Tu valides ou non la commande" },
+  { icon: "💳", text: "Une fois validé : paiement d'un acompte obligatoire pour passer la commande" },
+  { icon: "🎥", text: "Le fournisseur nous envoie des vidéos + contrôle qualité" },
+  { icon: "👍", text: "Tu confirmes : oui ou non — Refus = acompte remboursé intégralement" },
 ];
 
 function CustomRequestForm({ onClose, onConfirm }) {
@@ -177,12 +177,12 @@ function CustomRequestForm({ onClose, onConfirm }) {
   };
 
   if (sent) return (
-    <Modal title="Demande personnalisÃ©e" onClose={onClose}>
+    <Modal title="Demande personnalisée" onClose={onClose}>
       <div style={{ textAlign: "center", padding: "20px 0" }}>
-        <div style={{ fontSize: 64, marginBottom: 16 }}>âœ¨</div>
-        <div style={{ fontSize: 24, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, marginBottom: 12 }}>Demande envoyÃ©e !</div>
+        <div style={{ fontSize: 64, marginBottom: 16 }}>✨</div>
+        <div style={{ fontSize: 24, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, marginBottom: 12 }}>Demande envoyée !</div>
         <div style={{ fontSize: 13, color: C.textMid, lineHeight: 1.9, marginBottom: 24, fontFamily: "Jost, sans-serif" }}>
-          Nous avons bien reÃ§u votre photo.<br />Nous vous recontacterons rapidement.<br /><br />
+          Nous avons bien reçu votre photo.<br />Nous vous recontacterons rapidement.<br /><br />
           <span style={{ color: "#8B6B9E", fontWeight: 600 }}>Aucun paiement avant votre accord.</span>
         </div>
         <Btn onClick={onClose}>Fermer</Btn>
@@ -191,9 +191,9 @@ function CustomRequestForm({ onClose, onConfirm }) {
   );
 
   return (
-    <Modal title="Commande personnalisÃ©e" onClose={onClose} wide>
+    <Modal title="Commande personnalisée" onClose={onClose} wide>
       <div style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 11, letterSpacing: 2.5, color: C.accentDark, textTransform: "uppercase", marginBottom: 14, fontFamily: "Jost, sans-serif", fontWeight: 500 }}>Comment Ã§a fonctionne ?</div>
+        <div style={{ fontSize: 11, letterSpacing: 2.5, color: C.accentDark, textTransform: "uppercase", marginBottom: 14, fontFamily: "Jost, sans-serif", fontWeight: 500 }}>Comment ça fonctionne ?</div>
         {PROCESS_STEPS.map((s, i) => (
           <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 14px", marginBottom: 6, background: i === 4 ? "#F5EEF8" : C.bg, border: `1px solid ${i === 4 ? "#D4B8E0" : C.border}`, borderRadius: 10 }}>
             <div style={{ width: 26, height: 26, borderRadius: "50%", background: i === 4 ? "#8B6B9E" : C.accent, color: C.white, fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</div>
@@ -205,21 +205,21 @@ function CustomRequestForm({ onClose, onConfirm }) {
         ))}
       </div>
       <div style={{ height: 1, background: C.border, marginBottom: 24 }} />
-      <ImgUpload value={form.productImg} onChange={(v) => setForm(f => ({ ...f, productImg: v }))} label="Photo de l'article souhaitÃ© *" />
-      <Sel label="CatÃ©gorie" value={form.productCategory} onChange={set("productCategory")} options={CATS.map(c => ({ v: c, l: `${getEmoji(c)} ${c}` }))} required />
-      {needsSize && <Field label="Votre pointure *" value={form.clientSize} onChange={set("clientSize")} placeholder="Ex : 38, 39, 40..." hint="Indiquez votre pointure europÃ©enne." required />}
+      <ImgUpload value={form.productImg} onChange={(v) => setForm(f => ({ ...f, productImg: v }))} label="Photo de l'article souhaité *" />
+      <Sel label="Catégorie" value={form.productCategory} onChange={set("productCategory")} options={CATS.map(c => ({ v: c, l: `${getEmoji(c)} ${c}` }))} required />
+      {needsSize && <Field label="Votre pointure *" value={form.clientSize} onChange={set("clientSize")} placeholder="Ex : 38, 39, 40..." hint="Indiquez votre pointure européenne." required />}
       <div style={{ background: "#F5EEF8", border: "1px solid #D4B8E0", borderRadius: 10, padding: "12px 16px", marginBottom: 20 }}>
-        <div style={{ fontSize: 12, color: "#6B4D7E", lineHeight: 1.7, fontFamily: "Jost, sans-serif" }}>ðŸ“© Nous vous recontactons avec le prix. <strong>Aucun acompte avant votre accord.</strong></div>
+        <div style={{ fontSize: 12, color: "#6B4D7E", lineHeight: 1.7, fontFamily: "Jost, sans-serif" }}>📩 Nous vous recontactons avec le prix. <strong>Aucun acompte avant votre accord.</strong></div>
       </div>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
         <Btn variant="ghost" onClick={onClose}>Annuler</Btn>
-        <Btn variant="purple" onClick={handleSubmit} disabled={!canSubmit || loading}>{loading ? "Envoi..." : "Envoyer ma demande â†’"}</Btn>
+        <Btn variant="purple" onClick={handleSubmit} disabled={!canSubmit || loading}>{loading ? "Envoi..." : "Envoyer ma demande →"}</Btn>
       </div>
     </Modal>
   );
 }
 
-// â”€â”€ PRODUCT CARD â”€â”€
+// ── PRODUCT CARD ──
 function ProductCard({ p, onBuy, isCatalog }) {
   const [hover, setHover] = useState(false);
   const needsSize = isShoeCategory(p.category);
@@ -244,18 +244,18 @@ function ProductCard({ p, onBuy, isCatalog }) {
         <div style={{ fontSize: 12, color: C.textLight, lineHeight: 1.6, marginBottom: 16, fontFamily: "Jost, sans-serif", minHeight: 36 }}>{p.description}</div>
         {isCatalog
           ? <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 16 }}>
-            <div><div style={{ fontSize: 9, color: C.textLight, letterSpacing: 2, marginBottom: 2 }}>PRIX ESTIMÃ‰</div><div style={{ fontSize: 22, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600 }}>{fmt(p.estimatedPrice)}</div></div>
+            <div><div style={{ fontSize: 9, color: C.textLight, letterSpacing: 2, marginBottom: 2 }}>PRIX ESTIMÉ</div><div style={{ fontSize: 22, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600 }}>{fmt(p.estimatedPrice)}</div></div>
             <div style={{ textAlign: "right" }}><div style={{ fontSize: 9, color: C.textLight, letterSpacing: 2, marginBottom: 2 }}>ACOMPTE</div><div style={{ fontSize: 22, color: C.green, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600 }}>{fmt(p.deposit)}</div></div>
           </div>
           : <div style={{ fontSize: 26, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, marginBottom: 16 }}>{fmt(p.price)}</div>}
-        {isCatalog && <div style={{ fontSize: 11, color: C.textLight, marginBottom: 14, fontFamily: "Jost, sans-serif" }}>â± DÃ©lai estimÃ© : {p.leadTime}</div>}
-        <Btn full onClick={() => onBuy(p)}>{isCatalog ? "RÃ©server avec acompte" : "AcquÃ©rir"}</Btn>
+        {isCatalog && <div style={{ fontSize: 11, color: C.textLight, marginBottom: 14, fontFamily: "Jost, sans-serif" }}>⏱ Délai estimé : {p.leadTime}</div>}
+        <Btn full onClick={() => onBuy(p)}>{isCatalog ? "Réserver avec acompte" : "Acquérir"}</Btn>
       </div>
     </div>
   );
 }
 
-// â”€â”€ ORDER FORM â”€â”€
+// ── ORDER FORM ──
 function OrderForm({ product, isCatalog, clientEmail, onClose, onConfirm }) {
   const [step, setStep] = useState(1);
   const needsSize = isShoeCategory(product.category);
@@ -268,15 +268,15 @@ function OrderForm({ product, isCatalog, clientEmail, onClose, onConfirm }) {
 
   const handlePay = () => { window.open(form.paiement === "revolut" ? REVOLUT_LINK : PAYPAL_LINK, "_blank"); setStep(4); };
   const handleConfirmPayment = async () => { setLoading(true); await onConfirm(form); setLoading(false); setStep(5); };
-  const steps = ["CoordonnÃ©es", "Livraison", "Paiement", "Validation", "ConfirmÃ©"];
+  const steps = ["Coordonnées", "Livraison", "Paiement", "Validation", "Confirmé"];
 
   return (
-    <Modal title={isCatalog ? "RÃ©server â€” Acompte" : "Finaliser l'achat"} onClose={onClose} wide>
+    <Modal title={isCatalog ? "Réserver — Acompte" : "Finaliser l'achat"} onClose={onClose} wide>
       <div style={{ display: "flex", marginBottom: 32, position: "relative" }}>
         {steps.map((s, i) => (
           <div key={i} style={{ flex: 1, textAlign: "center" }}>
             <div style={{ width: 28, height: 28, borderRadius: "50%", background: step > i + 1 ? C.green : step === i + 1 ? C.accent : C.border, color: step >= i + 1 ? C.white : C.textLight, fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 6px", fontFamily: "Jost, sans-serif" }}>
-              {step > i + 1 ? "âœ“" : i + 1}
+              {step > i + 1 ? "✓" : i + 1}
             </div>
             <div style={{ fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase", color: step === i + 1 ? C.accent : C.textLight, fontFamily: "Jost, sans-serif" }}>{s}</div>
           </div>
@@ -308,68 +308,68 @@ function OrderForm({ product, isCatalog, clientEmail, onClose, onConfirm }) {
       {step === 1 && (
         <div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
-            <Field label="PrÃ©nom" value={form.prenom} onChange={set("prenom")} required />
+            <Field label="Prénom" value={form.prenom} onChange={set("prenom")} required />
             <Field label="Nom" value={form.nom} onChange={set("nom")} required />
           </div>
-          <Field label="Email" type="email" value={form.email} onChange={set("email")} required hint="ðŸ“§ Vous recevrez vos confirmations sur cet email." />
-          <Field label="TÃ©lÃ©phone" type="tel" value={form.tel} onChange={set("tel")} required placeholder="06 XX XX XX XX" />
+          <Field label="Email" type="email" value={form.email} onChange={set("email")} required hint="📧 Vous recevrez vos confirmations sur cet email." />
+          <Field label="Téléphone" type="tel" value={form.tel} onChange={set("tel")} required placeholder="06 XX XX XX XX" />
           {isCatalog && needsSize && (
             <Field label={`Votre pointure ${getEmoji(product.category)}`} value={form.clientSize} onChange={set("clientSize")} placeholder="Ex : 38, 39, 40..." required
-              hint={product.sizes && product.sizes.length > 0 ? `Tailles disponibles : ${product.sizes.join(", ")}` : "Indiquez votre pointure europÃ©enne."} />
+              hint={product.sizes && product.sizes.length > 0 ? `Tailles disponibles : ${product.sizes.join(", ")}` : "Indiquez votre pointure européenne."} />
           )}
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 8 }}>
             <Btn variant="ghost" onClick={onClose}>Annuler</Btn>
-            <Btn onClick={() => setStep(2)} disabled={!step1ok}>Continuer â†’</Btn>
+            <Btn onClick={() => setStep(2)} disabled={!step1ok}>Continuer →</Btn>
           </div>
         </div>
       )}
       {step === 2 && (
         <div>
-          <Sel label="Mode de livraison" value={form.livraison} onChange={set("livraison")} options={[{ v: "point_relais", l: "ðŸ“¦ Point Relais Mondial Relay" }, { v: "domicile", l: "ðŸ  Livraison Ã  domicile" }]} />
-          <Field label="Adresse complÃ¨te" value={form.adresse} onChange={set("adresse")} required placeholder="10 rue de la Paix" />
+          <Sel label="Mode de livraison" value={form.livraison} onChange={set("livraison")} options={[{ v: "point_relais", l: "📦 Point Relais Mondial Relay" }, { v: "domicile", l: "🏠 Livraison à domicile" }]} />
+          <Field label="Adresse complète" value={form.adresse} onChange={set("adresse")} required placeholder="10 rue de la Paix" />
           <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "0 14px" }}>
             <Field label="Code postal" value={form.codePostal} onChange={set("codePostal")} required placeholder="75001" />
             <Field label="Ville" value={form.ville} onChange={set("ville")} required placeholder="Paris" />
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", gap: 10, marginTop: 8 }}>
-            <Btn variant="ghost" onClick={() => setStep(1)}>â† Retour</Btn>
-            <Btn onClick={() => setStep(3)} disabled={!step2ok}>Continuer â†’</Btn>
+            <Btn variant="ghost" onClick={() => setStep(1)}>← Retour</Btn>
+            <Btn onClick={() => setStep(3)} disabled={!step2ok}>Continuer →</Btn>
           </div>
         </div>
       )}
       {step === 3 && (
         <div>
-          <Sel label="Mode de paiement" value={form.paiement} onChange={set("paiement")} options={[{ v: "revolut", l: "ðŸ’³ Revolut" }, { v: "paypal", l: "ðŸ…¿ï¸ PayPal" }]} />
+          <Sel label="Mode de paiement" value={form.paiement} onChange={set("paiement")} options={[{ v: "revolut", l: "💳 Revolut" }, { v: "paypal", l: "🅿️ PayPal" }]} />
           <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18, marginBottom: 20 }}>
             <div style={{ fontSize: 13, color: C.text, fontFamily: "Jost, sans-serif", lineHeight: 1.8 }}>
-              Vous serez redirigÃ© vers {form.paiement === "revolut" ? "Revolut" : "PayPal"} pour rÃ©gler <strong style={{ color: C.accent }}>{fmt(amount)}</strong>.
+              Vous serez redirigé vers {form.paiement === "revolut" ? "Revolut" : "PayPal"} pour régler <strong style={{ color: C.accent }}>{fmt(amount)}</strong>.
             </div>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
-            <Btn variant="ghost" onClick={() => setStep(2)}>â† Retour</Btn>
-            <Btn variant="gold" onClick={handlePay}>{isCatalog ? `Payer l'acompte â€” ${fmt(amount)}` : `Payer â€” ${fmt(amount)}`}</Btn>
+            <Btn variant="ghost" onClick={() => setStep(2)}>← Retour</Btn>
+            <Btn variant="gold" onClick={handlePay}>{isCatalog ? `Payer l'acompte — ${fmt(amount)}` : `Payer — ${fmt(amount)}`}</Btn>
           </div>
         </div>
       )}
       {step === 4 && (
         <div>
           <div style={{ background: "#FFF8EC", border: `1px solid ${C.gold}40`, borderRadius: 14, padding: 22, marginBottom: 20, textAlign: "center" }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>ðŸ’³</div>
-            <div style={{ fontSize: 16, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, marginBottom: 8 }}>Avez-vous bien effectuÃ© le paiement ?</div>
-            <div style={{ fontSize: 13, color: C.textMid, lineHeight: 1.8, fontFamily: "Jost, sans-serif" }}>Revenez ici aprÃ¨s avoir rÃ©glÃ© <strong style={{ color: C.accent }}>{fmt(amount)}</strong>.</div>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>💳</div>
+            <div style={{ fontSize: 16, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, marginBottom: 8 }}>Avez-vous bien effectué le paiement ?</div>
+            <div style={{ fontSize: 13, color: C.textMid, lineHeight: 1.8, fontFamily: "Jost, sans-serif" }}>Revenez ici après avoir réglé <strong style={{ color: C.accent }}>{fmt(amount)}</strong>.</div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <Btn variant="green" full onClick={handleConfirmPayment} disabled={loading}>{loading ? "Enregistrement..." : "âœ“ J'ai effectuÃ© mon paiement"}</Btn>
+            <Btn variant="green" full onClick={handleConfirmPayment} disabled={loading}>{loading ? "Enregistrement..." : "✓ J'ai effectué mon paiement"}</Btn>
             <Btn variant="ghost" full onClick={() => window.open(form.paiement === "revolut" ? REVOLUT_LINK : PAYPAL_LINK, "_blank")}>Rouvrir le lien</Btn>
-            <Btn variant="ghost" full onClick={() => setStep(3)}>â† Retour</Btn>
+            <Btn variant="ghost" full onClick={() => setStep(3)}>← Retour</Btn>
           </div>
         </div>
       )}
       {step === 5 && (
         <div style={{ textAlign: "center", padding: "20px 0" }}>
-          <div style={{ fontSize: 64, marginBottom: 16 }}>{isCatalog ? "âœ¨" : "ðŸ›ï¸"}</div>
-          <div style={{ fontSize: 24, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, marginBottom: 8 }}>{isCatalog ? "RÃ©servation enregistrÃ©e !" : "Commande enregistrÃ©e !"}</div>
-          <div style={{ fontSize: 13, color: C.textMid, lineHeight: 1.9, marginBottom: 24, fontFamily: "Jost, sans-serif" }}>Un email de suivi sera envoyÃ© Ã  <strong style={{ color: C.accent }}>{form.email}</strong></div>
+          <div style={{ fontSize: 64, marginBottom: 16 }}>{isCatalog ? "✨" : "🛍️"}</div>
+          <div style={{ fontSize: 24, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, marginBottom: 8 }}>{isCatalog ? "Réservation enregistrée !" : "Commande enregistrée !"}</div>
+          <div style={{ fontSize: 13, color: C.textMid, lineHeight: 1.9, marginBottom: 24, fontFamily: "Jost, sans-serif" }}>Un email de suivi sera envoyé à <strong style={{ color: C.accent }}>{form.email}</strong></div>
           <Btn onClick={onClose}>Fermer</Btn>
         </div>
       )}
@@ -377,7 +377,7 @@ function OrderForm({ product, isCatalog, clientEmail, onClose, onConfirm }) {
   );
 }
 
-// â”€â”€ MY ORDERS â”€â”€
+// ── MY ORDERS ──
 function MyOrders({ onClose, prefillEmail }) {
   const [email, setEmail] = useState(prefillEmail || "");
   const [searched, setSearched] = useState(!!prefillEmail);
@@ -404,9 +404,9 @@ function MyOrders({ onClose, prefillEmail }) {
     <Modal title="Mes commandes" onClose={onClose} wide>
       {!searched ? (
         <div>
-          <p style={{ color: C.textMid, fontSize: 14, lineHeight: 1.8, marginBottom: 20, fontFamily: "Jost, sans-serif" }}>Entrez l'email utilisÃ© lors de votre commande.</p>
+          <p style={{ color: C.textMid, fontSize: 14, lineHeight: 1.8, marginBottom: 20, fontFamily: "Jost, sans-serif" }}>Entrez l'email utilisé lors de votre commande.</p>
           <Field label="Votre email" type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="votre@email.com" />
-          <Btn full onClick={() => setSearched(true)} disabled={!email}>Rechercher â†’</Btn>
+          <Btn full onClick={() => setSearched(true)} disabled={!email}>Rechercher →</Btn>
         </div>
       ) : (
         <div>
@@ -415,7 +415,7 @@ function MyOrders({ onClose, prefillEmail }) {
             <button onClick={() => { setSearched(false); setEmail(""); setOrders([]); }} style={{ background: "none", border: "none", color: C.accentDark, cursor: "pointer", fontSize: 12, textDecoration: "underline", fontFamily: "Jost, sans-serif" }}>Changer d'email</button>
           </div>
           {loading ? <Loader /> : orders.length === 0
-            ? <div style={{ textAlign: "center", padding: 40, color: C.textLight, fontFamily: "Jost, sans-serif" }}>Aucune commande trouvÃ©e.</div>
+            ? <div style={{ textAlign: "center", padding: 40, color: C.textLight, fontFamily: "Jost, sans-serif" }}>Aucune commande trouvée.</div>
             : orders.map(order => (
               <div key={order.id} style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 14, padding: 20, marginBottom: 14 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 10, marginBottom: 12 }}>
@@ -429,32 +429,32 @@ function MyOrders({ onClose, prefillEmail }) {
                   </div>
                   {order.depositPaid > 0 && (
                     <div style={{ textAlign: "right" }}>
-                      <div style={{ fontSize: 11, color: C.textLight, fontFamily: "Jost, sans-serif" }}>PayÃ©</div>
+                      <div style={{ fontSize: 11, color: C.textLight, fontFamily: "Jost, sans-serif" }}>Payé</div>
                       <div style={{ fontSize: 20, color: C.green, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600 }}>{fmt(order.depositPaid)}</div>
                     </div>
                   )}
                 </div>
                 {order.status === "paiement_a_verifier" && (
                   <div style={{ background: "#FFF8EC", border: `1px solid ${C.gold}40`, borderRadius: 10, padding: 12 }}>
-                    <div style={{ fontSize: 13, color: C.gold, lineHeight: 1.7, fontFamily: "Jost, sans-serif" }}>â³ <strong>Paiement en cours de vÃ©rification.</strong> Nous confirmons trÃ¨s prochainement.</div>
+                    <div style={{ fontSize: 13, color: C.gold, lineHeight: 1.7, fontFamily: "Jost, sans-serif" }}>⏳ <strong>Paiement en cours de vérification.</strong> Nous confirmons très prochainement.</div>
                   </div>
                 )}
                 {order.status === "paiement_confirme" && (
                   <div style={{ background: "#F0F9F1", border: `1px solid ${C.green}30`, borderRadius: 10, padding: 12 }}>
-                    <div style={{ fontSize: 13, color: C.green, lineHeight: 1.7, fontFamily: "Jost, sans-serif" }}>âœ… <strong>Paiement confirmÃ© !</strong> Votre commande est en cours de prÃ©paration.</div>
+                    <div style={{ fontSize: 13, color: C.green, lineHeight: 1.7, fontFamily: "Jost, sans-serif" }}>✅ <strong>Paiement confirmé !</strong> Votre commande est en cours de préparation.</div>
                   </div>
                 )}
                 {order.status === "disponible" && (
                   <div>
                     <div style={{ background: "#F0F9F1", border: `1px solid ${C.green}30`, borderRadius: 10, padding: 12, marginBottom: 12 }}>
-                      <div style={{ fontSize: 13, color: C.green, lineHeight: 1.7, fontFamily: "Jost, sans-serif" }}>ðŸŽ‰ <strong>Votre article est disponible !</strong><br />Finalisez en rÃ©glant le solde de <strong>{fmt((order.totalPrice || 0) - (order.depositPaid || 0))}</strong></div>
+                      <div style={{ fontSize: 13, color: C.green, lineHeight: 1.7, fontFamily: "Jost, sans-serif" }}>🎉 <strong>Votre article est disponible !</strong><br />Finalisez en réglant le solde de <strong>{fmt((order.totalPrice || 0) - (order.depositPaid || 0))}</strong></div>
                     </div>
-                    <Btn variant="green" full onClick={() => setFinalizing(order)}>Finaliser mon achat â†’</Btn>
+                    <Btn variant="green" full onClick={() => setFinalizing(order)}>Finaliser mon achat →</Btn>
                   </div>
                 )}
                 {order.status === "solde_recu" && (
                   <div style={{ background: "#F0F9F1", border: `1px solid ${C.green}30`, borderRadius: 10, padding: 12 }}>
-                    <div style={{ fontSize: 13, color: C.green, lineHeight: 1.7, fontFamily: "Jost, sans-serif" }}>âœ… <strong>Paiement reÃ§u !</strong> Votre article sera expÃ©diÃ© trÃ¨s prochainement.</div>
+                    <div style={{ fontSize: 13, color: C.green, lineHeight: 1.7, fontFamily: "Jost, sans-serif" }}>✅ <strong>Paiement reçu !</strong> Votre article sera expédié très prochainement.</div>
                   </div>
                 )}
               </div>
@@ -462,7 +462,7 @@ function MyOrders({ onClose, prefillEmail }) {
         </div>
       )}
       {finalizing && (
-        <Modal title={`Finaliser â€” ${finalizing.product}`} onClose={() => setFinalizing(null)}>
+        <Modal title={`Finaliser — ${finalizing.product}`} onClose={() => setFinalizing(null)}>
           <FinalizeForm order={finalizing} onConfirm={(f) => finalize(finalizing, f)} onClose={() => setFinalizing(null)} />
         </Modal>
       )}
@@ -481,31 +481,31 @@ function FinalizeForm({ order, onConfirm, onClose }) {
     <div>
       {step === 1 && <>
         <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 12, padding: 16, marginBottom: 20, textAlign: "center" }}>
-          <div style={{ fontSize: 12, color: C.textLight, fontFamily: "Jost, sans-serif" }}>Solde Ã  rÃ©gler</div>
+          <div style={{ fontSize: 12, color: C.textLight, fontFamily: "Jost, sans-serif" }}>Solde à régler</div>
           <div style={{ fontSize: 36, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600 }}>{fmt(solde)}</div>
         </div>
-        <Sel label="Mode de paiement" value={paiement} onChange={e => setPaiement(e.target.value)} options={[{ v: "revolut", l: "ðŸ’³ Revolut" }, { v: "paypal", l: "ðŸ…¿ï¸ PayPal" }]} />
+        <Sel label="Mode de paiement" value={paiement} onChange={e => setPaiement(e.target.value)} options={[{ v: "revolut", l: "💳 Revolut" }, { v: "paypal", l: "🅿️ PayPal" }]} />
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 8 }}>
           <Btn variant="ghost" onClick={onClose}>Annuler</Btn>
-          <Btn variant="green" onClick={handlePay}>Payer {fmt(solde)} â†’</Btn>
+          <Btn variant="green" onClick={handlePay}>Payer {fmt(solde)} →</Btn>
         </div>
       </>}
       {step === 2 && <>
         <div style={{ background: "#FFF8EC", border: `1px solid ${C.gold}40`, borderRadius: 14, padding: 22, marginBottom: 20, textAlign: "center" }}>
-          <div style={{ fontSize: 36, marginBottom: 10 }}>ðŸ’³</div>
-          <div style={{ fontSize: 15, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600 }}>Avez-vous bien effectuÃ© le paiement ?</div>
+          <div style={{ fontSize: 36, marginBottom: 10 }}>💳</div>
+          <div style={{ fontSize: 15, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600 }}>Avez-vous bien effectué le paiement ?</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <Btn variant="green" full onClick={handleConfirm} disabled={loading}>{loading ? "Enregistrement..." : "âœ“ J'ai payÃ© â€” Confirmer"}</Btn>
+          <Btn variant="green" full onClick={handleConfirm} disabled={loading}>{loading ? "Enregistrement..." : "✓ J'ai payé — Confirmer"}</Btn>
           <Btn variant="ghost" full onClick={() => window.open(paiement === "revolut" ? REVOLUT_LINK : PAYPAL_LINK, "_blank")}>Rouvrir le lien</Btn>
-          <Btn variant="ghost" full onClick={() => setStep(1)}>â† Retour</Btn>
+          <Btn variant="ghost" full onClick={() => setStep(1)}>← Retour</Btn>
         </div>
       </>}
     </div>
   );
 }
 
-// â”€â”€ CLIENT SHOP â”€â”€
+// ── CLIENT SHOP ──
 function ClientShop() {
   const [tab, setTab] = useState("stock");
   const [cat, setCat] = useState("Tous");
@@ -561,7 +561,7 @@ function ClientShop() {
 
   const handleCustomRequest = async (form) => {
     await supabase.from("orders").insert([{
-      order_id: uid(), product: "Demande personnalisÃ©e",
+      order_id: uid(), product: "Demande personnalisée",
       productImg: form.productImg, productCategory: form.productCategory,
       clientSize: form.clientSize || null, ref: "CUSTOM", type: "custom",
       depositPaid: 0, totalPrice: 0, status: "custom_request",
@@ -586,10 +586,10 @@ function ClientShop() {
       )}
       {emailSet && (
         <div style={{ background: C.accentLight, padding: "8px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 11, color: C.accentDark, letterSpacing: 1 }}>âœ“ {clientEmail}</span>
+          <span style={{ fontSize: 11, color: C.accentDark, letterSpacing: 1 }}>✓ {clientEmail}</span>
           <button onClick={() => setMyOrdersOpen(true)}
             style={{ background: C.accentDark, border: "none", borderRadius: 8, padding: "5px 14px", color: C.white, fontSize: 11, fontWeight: 600, letterSpacing: 1, cursor: "pointer", fontFamily: "Jost, sans-serif" }}>
-            Mes commandes â†’
+            Mes commandes →
           </button>
         </div>
       )}
@@ -598,7 +598,7 @@ function ClientShop() {
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
           <div style={{ padding: "18px 0" }}>
             <div style={{ fontSize: 26, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, letterSpacing: 6, color: C.text }}>LK <span style={{ color: C.accent }}>Luxe</span></div>
-            <div style={{ fontSize: 9, letterSpacing: 4, color: C.textLight, textTransform: "uppercase", marginTop: 1 }}>Le prix du faux, la qualitÃ© du vrai</div>
+            <div style={{ fontSize: 9, letterSpacing: 4, color: C.textLight, textTransform: "uppercase", marginTop: 1 }}>Le prix du faux, la qualité du vrai</div>
           </div>
           <button onClick={() => setContactOpen(true)} style={{ background: "none", border: "none", color: C.textLight, fontSize: 11, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "Jost, sans-serif", padding: "6px 12px" }}>Contact</button>
         </div>
@@ -610,11 +610,11 @@ function ClientShop() {
           Maroquinerie<br /><em style={{ fontStyle: "italic", color: C.accent }}>de Luxe</em>
         </h1>
         <p style={{ color: C.textMid, fontSize: 14, maxWidth: 480, margin: "0 auto", lineHeight: 1.9, fontFamily: "Jost, sans-serif" }}>
-          HermÃ¨s, Chanel, Dior, Louis Vuitton et bien d'autres â€” PiÃ¨ces sÃ©lectionnÃ©es disponibles immÃ©diatement ou sur commande avec acompte.
+          Hermès, Chanel, Dior, Louis Vuitton et bien d'autres — Pièces sélectionnées disponibles immédiatement ou sur commande avec acompte.
         </p>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 28, flexWrap: "wrap" }}>
-          <button onClick={() => setTab("stock")} style={{ background: tab === "stock" ? C.accent : C.surface, color: tab === "stock" ? C.white : C.accentDark, border: `2px solid ${C.accent}`, borderRadius: 12, padding: "12px 28px", fontSize: 12, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "Jost, sans-serif", transition: "all .2s" }}>ðŸ›ï¸ En stock</button>
-          <button onClick={() => setTab("catalog")} style={{ background: tab === "catalog" ? C.accent : C.surface, color: tab === "catalog" ? C.white : C.accentDark, border: `2px solid ${C.accent}`, borderRadius: 12, padding: "12px 28px", fontSize: 12, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "Jost, sans-serif", transition: "all .2s" }}>âœ¨ Sur commande</button>
+          <button onClick={() => setTab("stock")} style={{ background: tab === "stock" ? C.accent : C.surface, color: tab === "stock" ? C.white : C.accentDark, border: `2px solid ${C.accent}`, borderRadius: 12, padding: "12px 28px", fontSize: 12, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "Jost, sans-serif", transition: "all .2s" }}>🛍️ En stock</button>
+          <button onClick={() => setTab("catalog")} style={{ background: tab === "catalog" ? C.accent : C.surface, color: tab === "catalog" ? C.white : C.accentDark, border: `2px solid ${C.accent}`, borderRadius: 12, padding: "12px 28px", fontSize: 12, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "Jost, sans-serif", transition: "all .2s" }}>✨ Sur commande</button>
         </div>
       </div>
 
@@ -636,9 +636,9 @@ function ClientShop() {
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "40px 24px" }}>
         {tab === "catalog" && (
           <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: 20, marginBottom: 32, display: "flex", gap: 14, alignItems: "flex-start" }}>
-            <span style={{ fontSize: 22, flexShrink: 0 }}>âœ¨</span>
+            <span style={{ fontSize: 22, flexShrink: 0 }}>✨</span>
             <div style={{ fontSize: 13, color: C.textMid, lineHeight: 1.8, fontFamily: "Jost, sans-serif" }}>
-              Articles <strong style={{ color: C.text }}>sur commande</strong>. Versez un acompte pour rÃ©server. Vous ne trouvez pas ? Utilisez <strong style={{ color: "#8B6B9E" }}>"Commande personnalisÃ©e"</strong>.
+              Articles <strong style={{ color: C.text }}>sur commande</strong>. Versez un acompte pour réserver. Vous ne trouvez pas ? Utilisez <strong style={{ color: "#8B6B9E" }}>"Commande personnalisée"</strong>.
             </div>
           </div>
         )}
@@ -649,7 +649,7 @@ function ClientShop() {
               <ProductCard key={p.id} p={p} isCatalog={tab === "catalog"} onBuy={(prod) => setOrdering({ prod, isCatalog: tab === "catalog" })} />
             ))}
             {((tab === "stock" && filteredStock.length === 0) || (tab === "catalog" && filteredCatalog.length === 0)) && (
-              <div style={{ gridColumn: "1/-1", textAlign: "center", padding: 60, color: C.textLight, fontFamily: "Jost, sans-serif" }}>Aucun article disponible dans cette catÃ©gorie.</div>
+              <div style={{ gridColumn: "1/-1", textAlign: "center", padding: 60, color: C.textLight, fontFamily: "Jost, sans-serif" }}>Aucun article disponible dans cette catégorie.</div>
             )}
           </div>
         )}
@@ -657,8 +657,8 @@ function ClientShop() {
 
       <footer style={{ background: C.text, padding: "40px 24px", textAlign: "center", marginTop: 40 }}>
         <div style={{ fontSize: 20, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, letterSpacing: 6, color: C.accentLight, marginBottom: 6 }}>LK Luxe</div>
-        <div style={{ fontSize: 10, letterSpacing: 3, color: C.textLight, marginBottom: 20 }}>Le prix du faux, la qualitÃ© du vrai</div>
-        <div style={{ fontSize: 12, color: C.textLight, lineHeight: 2, fontFamily: "Jost, sans-serif" }}>ðŸ“§ {CONTACT_EMAIL} &nbsp;Â·&nbsp; ðŸ‘» lk-luxe</div>
+        <div style={{ fontSize: 10, letterSpacing: 3, color: C.textLight, marginBottom: 20 }}>Le prix du faux, la qualité du vrai</div>
+        <div style={{ fontSize: 12, color: C.textLight, lineHeight: 2, fontFamily: "Jost, sans-serif" }}>📧 {CONTACT_EMAIL} &nbsp;·&nbsp; 👻 lk-luxe</div>
         <button onClick={() => window.dispatchEvent(new CustomEvent("openAdmin"))} style={{ marginTop: 24, background: "none", border: "none", color: "#3a2a20", fontSize: 9, letterSpacing: 2, cursor: "pointer", fontFamily: "Jost, sans-serif", textTransform: "uppercase" }}>Administration</button>
       </footer>
 
@@ -668,7 +668,7 @@ function ClientShop() {
       {contactOpen && (
         <Modal title="Contact" onClose={() => setContactOpen(false)}>
           <div style={{ textAlign: "center", padding: "10px 0 20px" }}>
-            <div style={{ fontSize: 48, marginBottom: 20 }}>ðŸ’Œ</div>
+            <div style={{ fontSize: 48, marginBottom: 20 }}>💌</div>
             <div style={{ fontSize: 14, color: C.textMid, lineHeight: 2, fontFamily: "Jost, sans-serif" }}>
               Pour toute question :<br /><br />
               <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: C.accent, fontWeight: 600, textDecoration: "none" }}>{CONTACT_EMAIL}</a><br /><br />
@@ -681,7 +681,7 @@ function ClientShop() {
   );
 }
 
-// â”€â”€ ADMIN â”€â”€
+// ── ADMIN ──
 function AdminApp({ onLogout }) {
   const [tab, setTab] = useState("orders");
   const [stock, setStock] = useState([]);
@@ -750,11 +750,11 @@ function AdminApp({ onLogout }) {
 
   const saveEdit = async () => {
     if (editType === "stock") {
-      await supabase.from("stock").update({ name: editItem.name, brand: editItem.brand, price: +editItem.price, color: editItem.color, ref: editItem.ref, desc: editItem.description, img: editItem.img }).eq("id", editItem.id);
+      await supabase.from("stock").update({ name: editItem.name, brand: editItem.brand, price: +editItem.price, color: editItem.color, ref: editItem.ref, description: editItem.description, img: editItem.img }).eq("id", editItem.id);
       setStock(s => s.map(p => p.id === editItem.id ? { ...editItem, price: +editItem.price } : p));
     } else {
       const sizesStr = typeof editItem.sizes === "string" ? editItem.sizes : (editItem.sizes || []).join(", ");
-      await supabase.from("catalog").update({ name: editItem.name, brand: editItem.brand, estimatedPrice: +editItem.estimatedPrice, deposit: +editItem.deposit, leadTime: editItem.leadTime, color: editItem.color, ref: editItem.ref, desc: editItem.description, img: editItem.img, sizes: sizesStr }).eq("id", editItem.id);
+      await supabase.from("catalog").update({ name: editItem.name, brand: editItem.brand, estimatedPrice: +editItem.estimatedPrice, deposit: +editItem.deposit, leadTime: editItem.leadTime, color: editItem.color, ref: editItem.ref, description: editItem.description, img: editItem.img, sizes: sizesStr }).eq("id", editItem.id);
       setCatalog(c => c.map(p => p.id === editItem.id ? { ...editItem, sizes: sizesStr.split(",").map(x => x.trim()).filter(Boolean) } : p));
     }
     setEditItem(null);
@@ -764,9 +764,9 @@ function AdminApp({ onLogout }) {
     const nom = `${order.prenom || ""} ${order.nom || ""}`.trim() || order.email;
     const solde = fmt((order.totalPrice || 0) - (order.depositPaid || 0));
     const templates = {
-      confirmation: { subject: `âœ¨ Confirmation â€” ${order.order_id}`, body: `Bonjour ${nom},\n\nNous avons bien reÃ§u votre ${order.depositPaid < order.totalPrice ? "acompte de " + fmt(order.depositPaid) : "paiement"} pour : ${order.product} (rÃ©f. ${order.ref}).\n\nVotre commande est enregistrÃ©e sous la rÃ©fÃ©rence ${order.order_id}.\n${order.depositPaid < order.totalPrice ? "\nDÃ©lai estimÃ© : " + (order.leadTime || "quelques semaines") + "\nVous serez notifiÃ© dÃ¨s que votre article est disponible." : ""}\n\nMerci de votre confiance,\nLK Luxe` },
-      disponible: { subject: `ðŸŽ‰ Votre article est disponible ! â€” ${order.order_id}`, body: `Bonjour ${nom},\n\nBonne nouvelle ! Votre ${order.product} est disponible.\n\nAcompte dÃ©jÃ  rÃ©glÃ© : ${fmt(order.depositPaid)}\nSolde restant : ${solde}\n\nRendez-vous sur notre site, cliquez "Mes commandes" avec votre email ${order.email}.\n\nCordialement,\nLK Luxe` },
-      expediee: { subject: `ðŸ“¦ ExpÃ©diÃ© â€” ${order.order_id}`, body: `Bonjour ${nom},\n\nVotre ${order.product} est en route via Mondial Relay !\n\nAdresse : ${order.adresse || ""}, ${order.codePostal || ""} ${order.ville || ""}\n\nVous recevrez le numÃ©ro de suivi sous peu.\n\nMerci de votre confiance,\nLK Luxe` },
+      confirmation: { subject: `✨ Confirmation — ${order.order_id}`, body: `Bonjour ${nom},\n\nNous avons bien reçu votre ${order.depositPaid < order.totalPrice ? "acompte de " + fmt(order.depositPaid) : "paiement"} pour : ${order.product} (réf. ${order.ref}).\n\nVotre commande est enregistrée sous la référence ${order.order_id}.\n${order.depositPaid < order.totalPrice ? "\nDélai estimé : " + (order.leadTime || "quelques semaines") + "\nVous serez notifié dès que votre article est disponible." : ""}\n\nMerci de votre confiance,\nLK Luxe` },
+      disponible: { subject: `🎉 Votre article est disponible ! — ${order.order_id}`, body: `Bonjour ${nom},\n\nBonne nouvelle ! Votre ${order.product} est disponible.\n\nAcompte déjà réglé : ${fmt(order.depositPaid)}\nSolde restant : ${solde}\n\nRendez-vous sur notre site, cliquez "Mes commandes" avec votre email ${order.email}.\n\nCordialement,\nLK Luxe` },
+      expediee: { subject: `📦 Expédié — ${order.order_id}`, body: `Bonjour ${nom},\n\nVotre ${order.product} est en route via Mondial Relay !\n\nAdresse : ${order.adresse || ""}, ${order.codePostal || ""} ${order.ville || ""}\n\nVous recevrez le numéro de suivi sous peu.\n\nMerci de votre confiance,\nLK Luxe` },
     };
     return templates[type] || { subject: "", body: "" };
   };
@@ -787,15 +787,15 @@ function AdminApp({ onLogout }) {
             </div>
             <nav style={{ display: "flex", flexShrink: 0 }}>
               {[
-                ["orders", `Commandes${payCount > 0 || readyCount > 0 || soldeCount > 0 ? ` (${payCount > 0 ? `${payCount}ðŸ’³` : ""}${readyCount > 0 ? ` ${readyCount}â³` : ""}${soldeCount > 0 ? ` ${soldeCount}ðŸ’°` : ""})` : ""}`],
-                ["custom", `Demandes${customCount > 0 ? ` (${customCount}ðŸ”)` : ""}`],
-                ["stock", "Stock"], ["catalog", "Catalogue"], ["settings", "CatÃ©gories"],
+                ["orders", `Commandes${payCount > 0 || readyCount > 0 || soldeCount > 0 ? ` (${payCount > 0 ? `${payCount}💳` : ""}${readyCount > 0 ? ` ${readyCount}⏳` : ""}${soldeCount > 0 ? ` ${soldeCount}💰` : ""})` : ""}`],
+                ["custom", `Demandes${customCount > 0 ? ` (${customCount}🔍)` : ""}`],
+                ["stock", "Stock"], ["catalog", "Catalogue"], ["settings", "Catégories"],
               ].map(([id, label]) => (
                 <button key={id} onClick={() => setTab(id)} style={{ padding: "14px 16px", background: "none", border: "none", borderBottom: `2px solid ${tab === id ? C.accent : "transparent"}`, color: tab === id ? C.accentLight : C.textLight, fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", cursor: "pointer", fontFamily: "Jost, sans-serif", whiteSpace: "nowrap" }}>{label}</button>
               ))}
             </nav>
           </div>
-          <button onClick={onLogout} style={{ background: "none", border: `1px solid #3a2a20`, borderRadius: 8, padding: "7px 16px", color: C.textLight, fontSize: 10, letterSpacing: 2, cursor: "pointer", fontFamily: "Jost, sans-serif", textTransform: "uppercase", flexShrink: 0 }}>â† Site</button>
+          <button onClick={onLogout} style={{ background: "none", border: `1px solid #3a2a20`, borderRadius: 8, padding: "7px 16px", color: C.textLight, fontSize: 10, letterSpacing: 2, cursor: "pointer", fontFamily: "Jost, sans-serif", textTransform: "uppercase", flexShrink: 0 }}>← Site</button>
         </div>
       </div>
 
@@ -817,26 +817,26 @@ function AdminApp({ onLogout }) {
                         </div>
                         <div style={{ fontSize: 18, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, marginBottom: 4 }}>{order.product}</div>
                         <div style={{ fontSize: 12, color: C.textMid, lineHeight: 1.8 }}>
-                          <strong>{order.prenom} {order.nom}</strong> Â· <span style={{ color: C.accent }}>{order.email}</span> Â· {order.tel}<br />
-                          ðŸ“¦ {order.livraison === "point_relais" ? "Point Relais" : "Domicile"} â€” {order.adresse}, {order.codePostal} {order.ville}<br />
-                          ðŸ’³ {order.paiement === "revolut" ? "Revolut" : "PayPal"} Â· {order.date}
-                          {order.clientSize && <><br />ðŸ‘Ÿ Pointure : <strong>{order.clientSize}</strong></>}
+                          <strong>{order.prenom} {order.nom}</strong> · <span style={{ color: C.accent }}>{order.email}</span> · {order.tel}<br />
+                          📦 {order.livraison === "point_relais" ? "Point Relais" : "Domicile"} — {order.adresse}, {order.codePostal} {order.ville}<br />
+                          💳 {order.paiement === "revolut" ? "Revolut" : "PayPal"} · {order.date}
+                          {order.clientSize && <><br />👟 Pointure : <strong>{order.clientSize}</strong></>}
                         </div>
                       </div>
                       <div style={{ textAlign: "right" }}>
-                        <div style={{ fontSize: 10, color: C.textLight, letterSpacing: 1 }}>PAYÃ‰</div>
+                        <div style={{ fontSize: 10, color: C.textLight, letterSpacing: 1 }}>PAYÉ</div>
                         <div style={{ fontSize: 24, color: C.green, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600 }}>{fmt(order.depositPaid)}</div>
                         {order.totalPrice > order.depositPaid && <div style={{ fontSize: 13, color: C.accent }}>Solde : {fmt(order.totalPrice - order.depositPaid)}</div>}
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                      {order.status === "paiement_a_verifier" && <Btn sm variant="green" onClick={() => updateOrder(order.id, { status: "paiement_confirme" })}>âœ“ Paiement reÃ§u</Btn>}
-                      {order.status === "paiement_confirme" && <Btn sm onClick={async () => { const o = await updateOrder(order.id, { status: "expediee" }); setEmailPreview({ order: o, type: "expediee" }); }}>ðŸšš ExpÃ©dier</Btn>}
-                      {order.status === "en_attente" && order.type === "catalog" && <Btn sm variant="ghost" onClick={() => updateOrder(order.id, { status: "commande" })}>âœ“ CommandÃ©</Btn>}
-                      {["en_attente", "commande"].includes(order.status) && <Btn sm variant="green" onClick={async () => { const o = await updateOrder(order.id, { status: "disponible" }); setEmailPreview({ order: o, type: "disponible" }); }}>ðŸ“¦ Disponible â†’ Notifier</Btn>}
-                      {order.status === "disponible" && <span style={{ fontSize: 11, color: C.gold, fontFamily: "Jost, sans-serif", padding: "8px 14px", background: C.gold + "15", borderRadius: 8, border: `1px solid ${C.gold}30` }}>â³ En attente du solde client</span>}
-                      {order.status === "solde_recu" && <Btn sm onClick={async () => { const o = await updateOrder(order.id, { status: "expediee" }); setEmailPreview({ order: o, type: "expediee" }); }}>ðŸšš ExpÃ©dier</Btn>}
-                      <Btn sm variant="ghost" onClick={() => setEmailPreview({ order, type: "confirmation" })}>ðŸ“§ Email</Btn>
+                      {order.status === "paiement_a_verifier" && <Btn sm variant="green" onClick={() => updateOrder(order.id, { status: "paiement_confirme" })}>✓ Paiement reçu</Btn>}
+                      {order.status === "paiement_confirme" && <Btn sm onClick={async () => { const o = await updateOrder(order.id, { status: "expediee" }); setEmailPreview({ order: o, type: "expediee" }); }}>🚚 Expédier</Btn>}
+                      {order.status === "en_attente" && order.type === "catalog" && <Btn sm variant="ghost" onClick={() => updateOrder(order.id, { status: "commande" })}>✓ Commandé</Btn>}
+                      {["en_attente", "commande"].includes(order.status) && <Btn sm variant="green" onClick={async () => { const o = await updateOrder(order.id, { status: "disponible" }); setEmailPreview({ order: o, type: "disponible" }); }}>📦 Disponible → Notifier</Btn>}
+                      {order.status === "disponible" && <span style={{ fontSize: 11, color: C.gold, fontFamily: "Jost, sans-serif", padding: "8px 14px", background: C.gold + "15", borderRadius: 8, border: `1px solid ${C.gold}30` }}>⏳ En attente du solde client</span>}
+                      {order.status === "solde_recu" && <Btn sm onClick={async () => { const o = await updateOrder(order.id, { status: "expediee" }); setEmailPreview({ order: o, type: "expediee" }); }}>🚚 Expédier</Btn>}
+                      <Btn sm variant="ghost" onClick={() => setEmailPreview({ order, type: "confirmation" })}>📧 Email</Btn>
                       {!["annulee", "expediee"].includes(order.status) && <Btn sm variant="red" onClick={() => updateOrder(order.id, { status: "annulee" })}>Annuler</Btn>}
                     </div>
                   </div>
@@ -847,11 +847,11 @@ function AdminApp({ onLogout }) {
           {tab === "custom" && (
             <div>
               <div style={{ background: "linear-gradient(135deg,#F5EEF8,#EDE4F2)", border: "1px solid #D4B8E0", borderRadius: 14, padding: "16px 20px", marginBottom: 24, display: "flex", gap: 12, alignItems: "center" }}>
-                <span style={{ fontSize: 24 }}>ðŸ”</span>
-                <div style={{ fontSize: 13, color: "#6B4D7E", lineHeight: 1.7, fontFamily: "Jost, sans-serif" }}>Demandes clients avec photo. <strong>Aucun acompte encaissÃ©.</strong> Contactez-les pour disponibilitÃ© et prix.</div>
+                <span style={{ fontSize: 24 }}>🔍</span>
+                <div style={{ fontSize: 13, color: "#6B4D7E", lineHeight: 1.7, fontFamily: "Jost, sans-serif" }}>Demandes clients avec photo. <strong>Aucun acompte encaissé.</strong> Contactez-les pour disponibilité et prix.</div>
               </div>
               {orders.filter(o => o.isCustom).length === 0
-                ? <div style={{ textAlign: "center", padding: 60, color: C.textLight }}>Aucune demande personnalisÃ©e.</div>
+                ? <div style={{ textAlign: "center", padding: 60, color: C.textLight }}>Aucune demande personnalisée.</div>
                 : orders.filter(o => o.isCustom).map(order => (
                   <div key={order.id} style={{ background: C.surface, border: `2px solid #D4B8E0`, borderRadius: 14, padding: 22, marginBottom: 14 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginBottom: 16 }}>
@@ -864,7 +864,7 @@ function AdminApp({ onLogout }) {
                         <div style={{ fontSize: 18, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, marginBottom: 10 }}>{getEmoji(order.productCategory)} {order.productCategory}</div>
                         {order.clientSize && (
                           <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#F5EEF8", border: "1px solid #D4B8E0", borderRadius: 8, padding: "6px 14px" }}>
-                            <span style={{ fontSize: 16 }}>ðŸ‘Ÿ</span>
+                            <span style={{ fontSize: 16 }}>👟</span>
                             <span style={{ fontSize: 13, color: "#6B4D7E", fontWeight: 600, fontFamily: "Jost, sans-serif" }}>Pointure : {order.clientSize}</span>
                           </div>
                         )}
@@ -873,12 +873,12 @@ function AdminApp({ onLogout }) {
                         <div style={{ flexShrink: 0 }}>
                           <div style={{ fontSize: 10, color: C.textLight, letterSpacing: 2, marginBottom: 6, fontFamily: "Jost, sans-serif" }}>PHOTO CLIENT</div>
                           <img src={order.productImg} alt="" style={{ width: 140, height: 140, objectFit: "cover", borderRadius: 12, border: `2px solid #D4B8E0`, cursor: "pointer" }} onClick={() => setViewingCustom(order.productImg)} />
-                          <div style={{ fontSize: 10, color: "#8B6B9E", marginTop: 4, textAlign: "center", fontFamily: "Jost, sans-serif", cursor: "pointer" }} onClick={() => setViewingCustom(order.productImg)}>ðŸ” Agrandir</div>
+                          <div style={{ fontSize: 10, color: "#8B6B9E", marginTop: 4, textAlign: "center", fontFamily: "Jost, sans-serif", cursor: "pointer" }} onClick={() => setViewingCustom(order.productImg)}>🔍 Agrandir</div>
                         </div>
                       )}
                     </div>
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                      <Btn sm variant="green" onClick={() => acceptCustomRequest(order)}>âœ“ Accepter â†’ Ajouter au catalogue</Btn>
+                      <Btn sm variant="green" onClick={() => acceptCustomRequest(order)}>✓ Accepter → Ajouter au catalogue</Btn>
                       <Btn sm variant="red" onClick={() => updateOrder(order.id, { status: "annulee" })}>Refuser</Btn>
                     </div>
                   </div>
@@ -901,12 +901,12 @@ function AdminApp({ onLogout }) {
                     <div style={{ padding: 16 }}>
                       <div style={{ fontSize: 9, color: C.textLight, letterSpacing: 2, marginBottom: 3 }}>{p.brand}</div>
                       <div style={{ fontSize: 15, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, marginBottom: 2 }}>{p.name}</div>
-                      <div style={{ fontSize: 11, color: C.textMid, marginBottom: 10 }}>{p.color} Â· {p.ref}</div>
+                      <div style={{ fontSize: 11, color: C.textMid, marginBottom: 10 }}>{p.color} · {p.ref}</div>
                       <div style={{ fontSize: 22, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, marginBottom: 14 }}>{fmt(p.price)}</div>
                       <div style={{ display: "flex", gap: 8 }}>
-                        <Btn sm variant="ghost" onClick={() => { setEditItem({ ...p }); setEditType("stock"); }}>âœï¸ Modifier</Btn>
+                        <Btn sm variant="ghost" onClick={() => { setEditItem({ ...p }); setEditType("stock"); }}>✏️ Modifier</Btn>
                         <Btn sm variant="ghost" onClick={async () => { await supabase.from("stock").update({ available: !p.available }).eq("id", p.id); setStock(s => s.map(x => x.id === p.id ? { ...x, available: !x.available } : x)); }}>{p.available ? "Vendu" : "Dispo"}</Btn>
-                        <Btn sm variant="red" onClick={async () => { await supabase.from("stock").delete().eq("id", p.id); setStock(s => s.filter(x => x.id !== p.id)); }}>âœ•</Btn>
+                        <Btn sm variant="red" onClick={async () => { await supabase.from("stock").delete().eq("id", p.id); setStock(s => s.filter(x => x.id !== p.id)); }}>✕</Btn>
                       </div>
                     </div>
                   </div>
@@ -930,13 +930,13 @@ function AdminApp({ onLogout }) {
                     <div style={{ padding: 16 }}>
                       <div style={{ fontSize: 9, color: C.textLight, letterSpacing: 2, marginBottom: 3 }}>{p.brand}</div>
                       <div style={{ fontSize: 15, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, marginBottom: 2 }}>{p.name}</div>
-                      <div style={{ fontSize: 11, color: C.textMid, marginBottom: 10 }}>{p.color} Â· â± {p.leadTime}</div>
+                      <div style={{ fontSize: 11, color: C.textMid, marginBottom: 10 }}>{p.color} · ⏱ {p.leadTime}</div>
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
-                        <div><div style={{ fontSize: 9, color: C.textLight }}>ESTIMÃ‰</div><div style={{ fontSize: 20, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600 }}>{fmt(p.estimatedPrice)}</div></div>
+                        <div><div style={{ fontSize: 9, color: C.textLight }}>ESTIMÉ</div><div style={{ fontSize: 20, color: C.text, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600 }}>{fmt(p.estimatedPrice)}</div></div>
                         <div style={{ textAlign: "right" }}><div style={{ fontSize: 9, color: C.textLight }}>ACOMPTE</div><div style={{ fontSize: 20, color: C.green, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600 }}>{fmt(p.deposit)}</div></div>
                       </div>
                       <div style={{ display: "flex", gap: 8 }}>
-                        <Btn sm variant="ghost" onClick={() => { setEditItem({ ...p, sizes: p.sizes ? p.sizes.join(", ") : "" }); setEditType("catalog"); }}>âœï¸ Modifier</Btn>
+                        <Btn sm variant="ghost" onClick={() => { setEditItem({ ...p, sizes: p.sizes ? p.sizes.join(", ") : "" }); setEditType("catalog"); }}>✏️ Modifier</Btn>
                         <Btn sm variant="red" onClick={async () => { await supabase.from("catalog").delete().eq("id", p.id); setCatalog(c => c.filter(x => x.id !== p.id)); }}>Retirer</Btn>
                       </div>
                     </div>
@@ -949,18 +949,18 @@ function AdminApp({ onLogout }) {
           {tab === "settings" && (
             <div style={{ maxWidth: 500 }}>
               <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: 28 }}>
-                <div style={{ fontSize: 13, color: C.text, fontWeight: 500, letterSpacing: 2, textTransform: "uppercase", marginBottom: 20 }}>GÃ©rer les catÃ©gories</div>
+                <div style={{ fontSize: 13, color: C.text, fontWeight: 500, letterSpacing: 2, textTransform: "uppercase", marginBottom: 20 }}>Gérer les catégories</div>
                 {categories.map((c, i) => (
                   <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: C.bg, borderRadius: 10, marginBottom: 8 }}>
                     <span style={{ fontSize: 14, color: C.text, fontFamily: "Jost, sans-serif" }}>{getEmoji(c)} {c} {isShoeCategory(c) && <span style={{ fontSize: 10, color: "#8B6B9E", marginLeft: 6 }}>+ pointure</span>}</span>
-                    <button onClick={async () => { await supabase.from("categories").delete().eq("name", c); setCategories(cats => cats.filter(x => x !== c)); }} style={{ background: "none", border: "none", color: C.red, cursor: "pointer", fontSize: 18, lineHeight: 1 }}>Ã—</button>
+                    <button onClick={async () => { await supabase.from("categories").delete().eq("name", c); setCategories(cats => cats.filter(x => x !== c)); }} style={{ background: "none", border: "none", color: C.red, cursor: "pointer", fontSize: 18, lineHeight: 1 }}>×</button>
                   </div>
                 ))}
                 <div style={{ fontSize: 11, color: C.textLight, marginBottom: 12, fontFamily: "Jost, sans-serif", padding: "8px 12px", background: "#F5EEF8", borderRadius: 8 }}>
-                  ðŸ‘Ÿ Claquettes, Baskets, Talons affichent automatiquement un champ pointure.
+                  👟 Claquettes, Baskets, Talons affichent automatiquement un champ pointure.
                 </div>
                 <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
-                  <input value={newCat} onChange={e => setNewCat(e.target.value)} placeholder="Nouvelle catÃ©gorie..." style={{ flex: 1, background: C.bg, border: `1px solid ${C.border}`, borderRadius: 10, padding: "10px 14px", color: C.text, fontSize: 14, fontFamily: "Jost, sans-serif", outline: "none" }} />
+                  <input value={newCat} onChange={e => setNewCat(e.target.value)} placeholder="Nouvelle catégorie..." style={{ flex: 1, background: C.bg, border: `1px solid ${C.border}`, borderRadius: 10, padding: "10px 14px", color: C.text, fontSize: 14, fontFamily: "Jost, sans-serif", outline: "none" }} />
                   <Btn onClick={async () => { if (!newCat.trim()) return; await supabase.from("categories").insert([{ name: newCat.trim() }]); setCategories(c => [...c, newCat.trim()]); setNewCat(""); }}>Ajouter</Btn>
                 </div>
               </div>
@@ -974,10 +974,10 @@ function AdminApp({ onLogout }) {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 18px" }}>
             <Field label="Nom" value={sf.name} onChange={ssf("name")} required />
             <Field label="Marque" value={sf.brand} onChange={ssf("brand")} required />
-            <Field label="Prix (â‚¬)" type="number" value={sf.price} onChange={ssf("price")} required />
-            <Field label="RÃ©fÃ©rence" value={sf.ref} onChange={ssf("ref")} />
-            <Sel label="CatÃ©gorie" value={sf.category || categories[0] || ""} onChange={ssf("category")} options={categories.map(c => ({ v: c, l: `${getEmoji(c)} ${c}` }))} />
-            <Field label="Couleur / MatiÃ¨re" value={sf.color} onChange={ssf("color")} />
+            <Field label="Prix (€)" type="number" value={sf.price} onChange={ssf("price")} required />
+            <Field label="Référence" value={sf.ref} onChange={ssf("ref")} />
+            <Sel label="Catégorie" value={sf.category || categories[0] || ""} onChange={ssf("category")} options={categories.map(c => ({ v: c, l: `${getEmoji(c)} ${c}` }))} />
+            <Field label="Couleur / Matière" value={sf.color} onChange={ssf("color")} />
           </div>
           <Field label="Description" value={sf.description} onChange={ssf("description")} rows={3} />
           <ImgUpload value={sf.img} onChange={(v) => setSfRaw(f => ({ ...f, img: v }))} />
@@ -993,15 +993,15 @@ function AdminApp({ onLogout }) {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 18px" }}>
             <Field label="Nom" value={cf.name} onChange={scf("name")} required />
             <Field label="Marque" value={cf.brand} onChange={scf("brand")} required />
-            <Field label="Prix estimÃ© (â‚¬)" type="number" value={cf.estimatedPrice} onChange={scf("estimatedPrice")} required />
-            <Field label="Acompte (â‚¬)" type="number" value={cf.deposit} onChange={scf("deposit")} required />
-            <Sel label="CatÃ©gorie" value={cf.category || categories[0] || ""} onChange={scf("category")} options={categories.map(c => ({ v: c, l: `${getEmoji(c)} ${c}` }))} />
-            <Field label="Couleur / MatiÃ¨re" value={cf.color} onChange={scf("color")} />
-            <Field label="RÃ©fÃ©rence" value={cf.ref} onChange={scf("ref")} />
-            <Field label="DÃ©lai estimÃ©" value={cf.leadTime} onChange={scf("leadTime")} placeholder="ex: 3-6 semaines" />
+            <Field label="Prix estimé (€)" type="number" value={cf.estimatedPrice} onChange={scf("estimatedPrice")} required />
+            <Field label="Acompte (€)" type="number" value={cf.deposit} onChange={scf("deposit")} required />
+            <Sel label="Catégorie" value={cf.category || categories[0] || ""} onChange={scf("category")} options={categories.map(c => ({ v: c, l: `${getEmoji(c)} ${c}` }))} />
+            <Field label="Couleur / Matière" value={cf.color} onChange={scf("color")} />
+            <Field label="Référence" value={cf.ref} onChange={scf("ref")} />
+            <Field label="Délai estimé" value={cf.leadTime} onChange={scf("leadTime")} placeholder="ex: 3-6 semaines" />
           </div>
           {isShoeCategory(cf.category) && (
-            <Field label="Tailles disponibles ðŸ‘Ÿ" value={cf.sizes} onChange={scf("sizes")} placeholder="ex: 36, 37, 38, 39, 40" hint="SÃ©parez les tailles par des virgules." />
+            <Field label="Tailles disponibles 👟" value={cf.sizes} onChange={scf("sizes")} placeholder="ex: 36, 37, 38, 39, 40" hint="Séparez les tailles par des virgules." />
           )}
           <Field label="Description" value={cf.description} onChange={scf("description")} rows={3} />
           <ImgUpload value={cf.img} onChange={(v) => setCfRaw(f => ({ ...f, img: v }))} />
@@ -1013,22 +1013,22 @@ function AdminApp({ onLogout }) {
       )}
 
       {editItem && (
-        <Modal title={`Modifier â€” ${editItem.name}`} onClose={() => setEditItem(null)} wide>
+        <Modal title={`Modifier — ${editItem.name}`} onClose={() => setEditItem(null)} wide>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 18px" }}>
             <Field label="Nom" value={editItem.name} onChange={e => setEditItem(i => ({ ...i, name: e.target.value }))} required />
             <Field label="Marque" value={editItem.brand} onChange={e => setEditItem(i => ({ ...i, brand: e.target.value }))} />
             {editType === "stock"
-              ? <Field label="Prix (â‚¬)" type="number" value={editItem.price} onChange={e => setEditItem(i => ({ ...i, price: +e.target.value }))} required />
+              ? <Field label="Prix (€)" type="number" value={editItem.price} onChange={e => setEditItem(i => ({ ...i, price: +e.target.value }))} required />
               : <>
-                <Field label="Prix estimÃ© (â‚¬)" type="number" value={editItem.estimatedPrice} onChange={e => setEditItem(i => ({ ...i, estimatedPrice: +e.target.value }))} />
-                <Field label="Acompte (â‚¬)" type="number" value={editItem.deposit} onChange={e => setEditItem(i => ({ ...i, deposit: +e.target.value }))} />
-                <Field label="DÃ©lai estimÃ©" value={editItem.leadTime} onChange={e => setEditItem(i => ({ ...i, leadTime: e.target.value }))} />
+                <Field label="Prix estimé (€)" type="number" value={editItem.estimatedPrice} onChange={e => setEditItem(i => ({ ...i, estimatedPrice: +e.target.value }))} />
+                <Field label="Acompte (€)" type="number" value={editItem.deposit} onChange={e => setEditItem(i => ({ ...i, deposit: +e.target.value }))} />
+                <Field label="Délai estimé" value={editItem.leadTime} onChange={e => setEditItem(i => ({ ...i, leadTime: e.target.value }))} />
               </>}
             <Field label="Couleur" value={editItem.color} onChange={e => setEditItem(i => ({ ...i, color: e.target.value }))} />
-            <Field label="RÃ©fÃ©rence" value={editItem.ref} onChange={e => setEditItem(i => ({ ...i, ref: e.target.value }))} />
+            <Field label="Référence" value={editItem.ref} onChange={e => setEditItem(i => ({ ...i, ref: e.target.value }))} />
           </div>
           {editType === "catalog" && isShoeCategory(editItem.category) && (
-            <Field label="Tailles disponibles ðŸ‘Ÿ" value={typeof editItem.sizes === "string" ? editItem.sizes : (editItem.sizes || []).join(", ")} onChange={e => setEditItem(i => ({ ...i, sizes: e.target.value }))} placeholder="ex: 36, 37, 38, 39, 40" hint="SÃ©parez par des virgules." />
+            <Field label="Tailles disponibles 👟" value={typeof editItem.sizes === "string" ? editItem.sizes : (editItem.sizes || []).join(", ")} onChange={e => setEditItem(i => ({ ...i, sizes: e.target.value }))} placeholder="ex: 36, 37, 38, 39, 40" hint="Séparez par des virgules." />
           )}
           <Field label="Description" value={editItem.description} onChange={e => setEditItem(i => ({ ...i, description: e.target.value }))} rows={3} />
           <ImgUpload value={editItem.img} onChange={(v) => setEditItem(i => ({ ...i, img: v }))} label="Modifier l'image" />
@@ -1040,11 +1040,11 @@ function AdminApp({ onLogout }) {
       )}
 
       {emailPreview && (
-        <Modal title="ðŸ“§ Email client" onClose={() => setEmailPreview(null)}>
+        <Modal title="📧 Email client" onClose={() => setEmailPreview(null)}>
           {(() => { const t = genEmail(emailPreview.order, emailPreview.type); return (
             <div>
               <div style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: 10, color: C.accentDark, letterSpacing: 2, textTransform: "uppercase", marginBottom: 5 }}>Ã€</div>
+                <div style={{ fontSize: 10, color: C.accentDark, letterSpacing: 2, textTransform: "uppercase", marginBottom: 5 }}>À</div>
                 <div style={{ color: C.accent, fontSize: 14 }}>{emailPreview.order.email}</div>
               </div>
               <div style={{ marginBottom: 14 }}>
@@ -1067,14 +1067,14 @@ function AdminApp({ onLogout }) {
       {viewingCustom && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, cursor: "pointer" }} onClick={() => setViewingCustom(null)}>
           <img src={viewingCustom} alt="" style={{ maxWidth: "90vw", maxHeight: "90vh", borderRadius: 16, objectFit: "contain", boxShadow: "0 32px 80px rgba(0,0,0,0.5)" }} />
-          <div style={{ position: "absolute", top: 20, right: 24, color: "white", fontSize: 32, cursor: "pointer", lineHeight: 1 }}>Ã—</div>
+          <div style={{ position: "absolute", top: 20, right: 24, color: "white", fontSize: 32, cursor: "pointer", lineHeight: 1 }}>×</div>
         </div>
       )}
     </div>
   );
 }
 
-// â”€â”€ ROOT â”€â”€
+// ── ROOT ──
 export default function App() {
   const [view, setView] = useState("client");
   const [pwd, setPwd] = useState("");
@@ -1100,11 +1100,11 @@ export default function App() {
           <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 20, padding: "52px 48px", maxWidth: 400, width: "100%", textAlign: "center", boxShadow: `0 20px 60px ${C.accent}15` }}>
             <div style={{ fontSize: 30, fontFamily: "Cormorant, Georgia, serif", fontWeight: 600, letterSpacing: 6, color: C.text, marginBottom: 4 }}>LK Luxe</div>
             <div style={{ fontSize: 9, letterSpacing: 5, color: C.textLight, textTransform: "uppercase", marginBottom: 40 }}>Administration</div>
-            <Field label="Mot de passe" type="password" value={pwd} onChange={e => setPwd(e.target.value)} hint={pwdError ? "âŒ Mot de passe incorrect" : ""} />
+            <Field label="Mot de passe" type="password" value={pwd} onChange={e => setPwd(e.target.value)} hint={pwdError ? "❌ Mot de passe incorrect" : ""} />
             <div onKeyDown={e => e.key === "Enter" && login()}>
               <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 8 }}>
-                <Btn full onClick={login} disabled={!pwd}>AccÃ©der â†’</Btn>
-                <Btn full variant="ghost" onClick={() => setView("client")}>â† Retour au site</Btn>
+                <Btn full onClick={login} disabled={!pwd}>Accéder →</Btn>
+                <Btn full variant="ghost" onClick={() => setView("client")}>← Retour au site</Btn>
               </div>
             </div>
           </div>
