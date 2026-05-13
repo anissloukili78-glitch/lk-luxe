@@ -17,7 +17,7 @@ const uid = () => "LK-" + Date.now().toString(36).toUpperCase();
 const EMOJI_MAP = {"Sacs":"👜","Pochettes":"👛","Claquettes":"👡","Ceintures":"👔","Sacoches":"🎒","Baskets":"👟","Talons":"👠",default:"✨"};
 const getEmoji = (cat) => EMOJI_MAP[cat] || EMOJI_MAP.default;
 const isShoe = (cat) => SHOE_CATS.includes(cat);
-const isCustomOrder = (o) => o.isCustom === true || o.isCustom === "true" || o.status === "custom_request";
+const isCustomOrder = (o) => o.iscustom === true || o.iscustom === "true" || o.status === "custom_request";
 
 function Modal({ title, onClose, children, wide }) {
   useEffect(() => {
@@ -46,7 +46,7 @@ function Field({ label, value, onChange, type="text", placeholder, hint, require
     <div style={{marginBottom:18}}>
       {label && <label style={{display:"block",fontSize:10,letterSpacing:2.5,color:C.accentDark,textTransform:"uppercase",marginBottom:7,fontFamily:"Jost, sans-serif",fontWeight:500}}>{label}{required&&<span style={{color:C.gold,marginLeft:3}}>*</span>}</label>}
       {rows ? <textarea value={value} onChange={onChange} rows={rows} placeholder={placeholder} style={style} onFocus={()=>setFocus(true)} onBlur={()=>setFocus(false)}/>
-        : <input type={type} value={value} onChange={onChange} placeholder={placeholder} style={style} onFocus={()=>setFocus(true)} onBlur={()=>setFocus(false)}/>}
+      : <input type={type} value={value} onChange={onChange} placeholder={placeholder} style={style} onFocus={()=>setFocus(true)} onBlur={()=>setFocus(false)}/>}
       {hint && <div style={{fontSize:11,color:C.textLight,marginTop:5,lineHeight:1.5}}>{hint}</div>}
     </div>
   );
@@ -196,13 +196,13 @@ function CustomRequestForm({ onClose, onConfirm }) {
       </div>
       <ImgUpload value={form.productImg} onChange={(v)=>setForm(f=>({...f,productImg:v}))} label="Photo de l'article souhaité *"/>
       <Sel label="Catégorie" value={form.productCategory} onChange={set("productCategory")} options={CATS.map(c=>({v:c,l:`${getEmoji(c)} ${c}`}))} required/>
-      {needsSize && <Field label="Votre pointure *" value={form.clientSize} onChange={set("clientSize")} placeholder="Ex : 38, 39, 40..." hint="Indiquez votre pointure européenne." required/>}
+      {needsSize && <Field label="Votre pointure *" value={form.clientSize} onChange={set("clientSize")} placeholder="Ex : 38, 39, 40…" hint="Indiquez votre pointure européenne." required/>}
       <div style={{background:"#F5EEF8",border:"1px solid #D4B8E0",borderRadius:10,padding:"12px 16px",marginBottom:20}}>
         <div style={{fontSize:12,color:"#6B4D7E",lineHeight:1.7,fontFamily:"Jost, sans-serif"}}>📩 Nous vous recontactons avec le prix. <strong>Aucun acompte avant votre accord.</strong></div>
       </div>
       <div style={{display:"flex",justifyContent:"flex-end",gap:10}}>
         <Btn variant="ghost" onClick={onClose}>Annuler</Btn>
-        <Btn variant="purple" onClick={async()=>{setLoading(true);await onConfirm(form);setLoading(false);setSent(true);}} disabled={!canSubmit||loading}>{loading?"Envoi...":"Envoyer ma demande →"}</Btn>
+        <Btn variant="purple" onClick={async()=>{setLoading(true);await onConfirm(form);setLoading(false);setSent(true);}} disabled={!canSubmit||loading}>{loading?"Envoi…":"Envoyer ma demande →"}</Btn>
       </div>
     </Modal>
   );
@@ -231,11 +231,11 @@ function ProductCard({ p, onBuy, isCatalog }) {
         <div style={{fontSize:12,color:C.textLight,lineHeight:1.6,marginBottom:16,fontFamily:"Jost, sans-serif",minHeight:36}}>{p.description}</div>
         {isCatalog
           ?<div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:16}}>
-            <div><div style={{fontSize:9,color:C.textLight,letterSpacing:2,marginBottom:2}}>PRIX ESTIMÉ</div><div style={{fontSize:22,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{fmt(p.estimatedprice||p.estimatedPrice||0)}</div></div>
+            <div><div style={{fontSize:9,color:C.textLight,letterSpacing:2,marginBottom:2}}>PRIX ESTIMÉ</div><div style={{fontSize:22,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{fmt(p.estimatedprice||0)}</div></div>
             <div style={{textAlign:"right"}}><div style={{fontSize:9,color:C.textLight,letterSpacing:2,marginBottom:2}}>ACOMPTE</div><div style={{fontSize:22,color:C.green,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{fmt(p.deposit||0)}</div></div>
           </div>
           :<div style={{fontSize:26,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600,marginBottom:16}}>{fmt(p.price)}</div>}
-        {isCatalog&&<div style={{fontSize:11,color:C.textLight,marginBottom:14,fontFamily:"Jost, sans-serif"}}>⏱ Délai estimé : {p.leadtime||p.leadTime}</div>}
+        {isCatalog&&<div style={{fontSize:11,color:C.textLight,marginBottom:14,fontFamily:"Jost, sans-serif"}}>⏱ Délai estimé : {p.leadtime}</div>}
         <Btn full onClick={()=>onBuy(p)}>{isCatalog?"Réserver avec acompte":"Acquérir"}</Btn>
       </div>
     </div>
@@ -247,7 +247,7 @@ function OrderForm({ product, isCatalog, clientEmail, onClose, onConfirm }) {
   const [loading,setLoading] = useState(false);
   const [form,setForm] = useState({nom:"",prenom:"",email:clientEmail||"",tel:"",adresse:"",codePostal:"",ville:"",livraison:"point_relais",paiement:"revolut",clientSize:""});
   const set = k => e => setForm(f=>({...f,[k]:e.target.value}));
-  const amount = isCatalog?(product.deposit||product.deposit||0):(product.price||0);
+  const amount = isCatalog?(product.deposit||0):(product.price||0);
   const step1ok = form.nom&&form.prenom&&form.email&&form.tel&&(!isShoe(product.category)||!isCatalog||form.clientSize);
   const step2ok = form.adresse&&form.codePostal&&form.ville;
   const steps = ["Coordonnées","Livraison","Paiement","Validation","Confirmé"];
@@ -292,7 +292,7 @@ function OrderForm({ product, isCatalog, clientEmail, onClose, onConfirm }) {
           <Field label="Email" type="email" value={form.email} onChange={set("email")} required hint="📧 Utilisez cet email pour suivre votre commande via 'Mes commandes'."/>
           <Field label="Téléphone" type="tel" value={form.tel} onChange={set("tel")} required placeholder="06 XX XX XX XX"/>
           {isCatalog&&isShoe(product.category)&&(
-            <Field label={`Votre pointure ${getEmoji(product.category)}`} value={form.clientSize} onChange={set("clientSize")} placeholder="Ex : 38, 39, 40..." required hint={product.sizes&&product.sizes.length>0?`Tailles disponibles : ${product.sizes.join(", ")}`:"Indiquez votre pointure européenne."}/>
+            <Field label={`Votre pointure ${getEmoji(product.category)}`} value={form.clientSize} onChange={set("clientSize")} placeholder="Ex : 38, 39, 40…" required hint={product.sizes&&product.sizes.length>0?`Tailles disponibles : ${product.sizes.join(", ")}`:"Indiquez votre pointure européenne."}/>
           )}
           <div style={{display:"flex",justifyContent:"flex-end",gap:10,marginTop:8}}>
             <Btn variant="ghost" onClick={onClose}>Annuler</Btn>
@@ -336,7 +336,12 @@ function OrderForm({ product, isCatalog, clientEmail, onClose, onConfirm }) {
             <div style={{fontSize:13,color:C.textMid,lineHeight:1.8,fontFamily:"Jost, sans-serif"}}>Revenez ici après avoir réglé <strong style={{color:C.accent}}>{fmt(amount)}</strong>.</div>
           </div>
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            <Btn variant="green" full onClick={async()=>{setLoading(true);await onConfirm(form);setLoading(false);setStep(5);}} disabled={loading}>{loading?"Enregistrement...":"✓ J'ai effectué mon paiement"}</Btn>
+            <Btn variant="green" full onClick={async()=>{
+              setLoading(true);
+              await onConfirm(form);
+              setLoading(false);
+              setStep(5);
+            }} disabled={loading}>{loading?"Enregistrement…":"✓ J'ai effectué mon paiement"}</Btn>
             <Btn variant="ghost" full onClick={()=>window.open(form.paiement==="revolut"?REVOLUT_LINK:PAYPAL_LINK,"_blank")}>Rouvrir le lien</Btn>
             <Btn variant="ghost" full onClick={()=>setStep(3)}>← Retour</Btn>
           </div>
@@ -409,10 +414,10 @@ function MyOrders({ onClose, prefillEmail }) {
                     <div style={{fontSize:17,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{order.product}</div>
                     <div style={{fontSize:12,color:C.textLight,fontFamily:"Jost, sans-serif"}}>{order.date}</div>
                   </div>
-                  {order.depositPaid>0&&(
+                  {order.depositpaid>0&&(
                     <div style={{textAlign:"right"}}>
                       <div style={{fontSize:11,color:C.textLight,fontFamily:"Jost, sans-serif"}}>Payé</div>
-                      <div style={{fontSize:20,color:C.green,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{fmt(order.depositPaid)}</div>
+                      <div style={{fontSize:20,color:C.green,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{fmt(order.depositpaid)}</div>
                     </div>
                   )}
                 </div>
@@ -423,7 +428,7 @@ function MyOrders({ onClose, prefillEmail }) {
                 {order.status==="disponible"&&(
                   <div>
                     <div style={{background:"#F0F9F1",border:`1px solid ${C.green}30`,borderRadius:10,padding:12,marginBottom:12}}>
-                      <div style={{fontSize:13,color:C.green,lineHeight:1.7,fontFamily:"Jost, sans-serif"}}>🎉 <strong>Votre article est disponible !</strong><br/>Finalisez en réglant le solde de <strong>{fmt((order.totalPrice||0)-(order.depositPaid||0))}</strong></div>
+                      <div style={{fontSize:13,color:C.green,lineHeight:1.7,fontFamily:"Jost, sans-serif"}}>🎉 <strong>Votre article est disponible !</strong><br/>Finalisez en réglant le solde de <strong>{fmt((order.totalprice||0)-(order.depositpaid||0))}</strong></div>
                     </div>
                     <Btn variant="green" full onClick={()=>setFinalizing(order)}>Finaliser mon achat →</Btn>
                   </div>
@@ -447,7 +452,7 @@ function FinalizeForm({ order, onConfirm, onClose }) {
   const [paiement,setPaiement] = useState("revolut");
   const [step,setStep] = useState(1);
   const [loading,setLoading] = useState(false);
-  const solde = (order.totalPrice||0)-(order.depositPaid||0);
+  const solde = (order.totalprice||0)-(order.depositpaid||0);
   return (
     <div>
       {step===1&&<>
@@ -467,7 +472,7 @@ function FinalizeForm({ order, onConfirm, onClose }) {
           <div style={{fontSize:15,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>Avez-vous bien effectué le paiement ?</div>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:10}}>
-          <Btn variant="green" full onClick={async()=>{setLoading(true);await onConfirm({paiement});setLoading(false);}} disabled={loading}>{loading?"Enregistrement...":"✓ J'ai payé — Confirmer"}</Btn>
+          <Btn variant="green" full onClick={async()=>{setLoading(true);await onConfirm({paiement});setLoading(false);}} disabled={loading}>{loading?"Enregistrement…":"✓ J'ai payé — Confirmer"}</Btn>
           <Btn variant="ghost" full onClick={()=>window.open(paiement==="revolut"?REVOLUT_LINK:PAYPAL_LINK,"_blank")}>Rouvrir le lien</Btn>
           <Btn variant="ghost" full onClick={()=>setStep(1)}>← Retour</Btn>
         </div>
@@ -503,7 +508,7 @@ function ClientShop() {
     if(se) console.error("stock:",se);
     if(ce) console.error("catalog:",ce);
     if(s) setStock(s.map(p=>({...p,sizes:p.sizes?p.sizes.split(",").map(x=>x.trim()).filter(Boolean):[]})));
-    if(c) setCatalog(c.map(p=>({...p,sizes:p.sizes?p.sizes.split(",").map(x=>x.trim()).filter(Boolean):[],estimatedPrice:p.estimatedprice||p.estimatedPrice||0,leadTime:p.leadtime||p.leadTime||""})));
+    if(c) setCatalog(c.map(p=>({...p,sizes:p.sizes?p.sizes.split(",").map(x=>x.trim()).filter(Boolean):[]})));
     if(cats&&cats.length>0) setCategories(cats.map(c=>c.name));
     setLoading(false);
   };
@@ -512,42 +517,57 @@ function ClientShop() {
   const filteredStock = cat==="Tous"?stock:stock.filter(p=>p.category===cat);
   const filteredCatalog = cat==="Tous"?catalog:catalog.filter(p=>p.category===cat);
 
-  const handleOrder = async(product,isCatalog,form) => {
+  const handleOrder = async(product, isCatalog, form) => {
     const orderData = {
-      order_id:uid(), prenom:form.prenom, nom:form.nom,
-      email:form.email.toLowerCase().trim(), tel:form.tel,
-      adresse:form.adresse, codePostal:form.codePostal, ville:form.ville,
-      livraison:form.livraison, paiement:form.paiement,
-      clientSize:form.clientSize||null,
-      product:`${product.brand} ${product.name}`,
-      ref:product.ref||"",
-      leadTime:product.leadtime||product.leadTime||null,
-      type:isCatalog?"catalog":"stock",
-      depositPaid:isCatalog?Number(product.deposit||0):Number(product.price||0),
-      totalPrice:isCatalog?Number(product.estimatedprice||product.estimatedPrice||0):Number(product.price||0),
-      status:isCatalog?"en_attente":"paiement_a_verifier",
-      date:new Date().toISOString().slice(0,10),
-      isCustom:false,
+      order_id: uid(),
+      prenom: form.prenom,
+      nom: form.nom,
+      email: form.email.toLowerCase().trim(),
+      tel: form.tel,
+      adresse: form.adresse,
+      codepostal: form.codePostal,
+      ville: form.ville,
+      livraison: form.livraison,
+      paiement: form.paiement,
+      clientsize: form.clientSize || null,
+      product: `${product.brand} ${product.name}`,
+      ref: product.ref || "",
+      leadtime: product.leadtime || null,
+      type: isCatalog ? "catalog" : "stock",
+      depositpaid: isCatalog ? Number(product.deposit || 0) : Number(product.price || 0),
+      totalprice: isCatalog ? Number(product.estimatedprice || 0) : Number(product.price || 0),
+      status: isCatalog ? "en_attente" : "paiement_a_verifier",
+      date: new Date().toISOString().slice(0, 10),
+      iscustom: false,
     };
     const {error} = await supabase.from("orders").insert([orderData]);
-    if(error){console.error("handleOrder:",error);return;}
+    if(error){ console.error("handleOrder:",error); return; }
     if(!isCatalog){
       await supabase.from("stock").update({available:false}).eq("id",product.id);
       setStock(s=>s.filter(p=>p.id!==product.id));
     }
-    if(!emailSet){setClientEmail(form.email.toLowerCase().trim());setEmailSet(true);}
+    if(!emailSet){ setClientEmail(form.email.toLowerCase().trim()); setEmailSet(true); }
   };
 
   const handleCustomRequest = async(form) => {
-    const emailVal = form.contact.includes("@")?form.contact.toLowerCase().trim():"";
+    const emailVal = form.contact.includes("@") ? form.contact.toLowerCase().trim() : "";
     const {error} = await supabase.from("orders").insert([{
-      order_id:uid(), product:"Demande personnalisée",
-      prenom:form.prenom, nom:form.nom, email:emailVal, tel:form.contact,
-      productImg:form.productImg, productCategory:form.productCategory,
-      clientSize:form.clientSize||null,
-      ref:"CUSTOM", type:"custom",
-      depositPaid:0, totalPrice:0, status:"custom_request",
-      date:new Date().toISOString().slice(0,10), isCustom:true,
+      order_id: uid(),
+      product: "Demande personnalisée",
+      prenom: form.prenom,
+      nom: form.nom,
+      email: emailVal,
+      tel: form.contact,
+      productimg: form.productImg,
+      productcategory: form.productCategory,
+      clientsize: form.clientSize || null,
+      ref: "CUSTOM",
+      type: "custom",
+      depositpaid: 0,
+      totalprice: 0,
+      status: "custom_request",
+      date: new Date().toISOString().slice(0, 10),
+      iscustom: true,
     }]);
     if(error) console.error("handleCustomRequest:",error);
   };
@@ -634,10 +654,10 @@ function ClientShop() {
       <footer style={{background:C.text,padding:"40px 24px",textAlign:"center",marginTop:40}}>
         <div style={{fontSize:20,fontFamily:"Cormorant, Georgia, serif",fontWeight:600,letterSpacing:6,color:C.accentLight,marginBottom:6}}>LK Luxe</div>
         <div style={{fontSize:10,letterSpacing:3,color:C.textLight,marginBottom:20}}>Le prix du faux, la qualité du vrai</div>
-        <div style={{fontSize:12,color:C.textLight,lineHeight:2,fontFamily:"Jost, sans-serif"}}>📧 {CONTACT_EMAIL} &nbsp;·&nbsp; 👻 lk-luxe</div>
+        <div style={{fontSize:12,color:C.textLight,lineHeight:2,fontFamily:"Jost, sans-serif"}}>📧 {CONTACT_EMAIL}  ·  👻 lk-luxe</div>
         <button onClick={()=>window.dispatchEvent(new CustomEvent("openAdmin"))} style={{marginTop:24,background:"none",border:"none",color:"#3a2a20",fontSize:9,letterSpacing:2,cursor:"pointer",fontFamily:"Jost, sans-serif",textTransform:"uppercase"}}>Administration</button>
       </footer>
-      {ordering&&<OrderForm product={ordering.prod} isCatalog={ordering.isCatalog} clientEmail={clientEmail} onClose={()=>setOrdering(null)} onConfirm={async(form)=>{await handleOrder(ordering.prod,ordering.isCatalog,form);}}/>}
+      {ordering&&<OrderForm product={ordering.prod} isCatalog={ordering.isCatalog} clientEmail={clientEmail} onClose={()=>setOrdering(null)} onConfirm={async(form)=>{ await handleOrder(ordering.prod, ordering.isCatalog, form); }}/>}
       {myOrdersOpen&&<MyOrders onClose={()=>setMyOrdersOpen(false)} prefillEmail={clientEmail}/>}
       {customRequestOpen&&<CustomRequestForm onClose={()=>setCustomRequestOpen(false)} onConfirm={handleCustomRequest}/>}
       {contactOpen&&(
@@ -689,7 +709,7 @@ function AdminApp({ onLogout }) {
     if(ce) console.error("catalog:",ce);
     if(oe) console.error("orders:",oe);
     if(s) setStock(s.map(p=>({...p,sizes:p.sizes?p.sizes.split(",").map(x=>x.trim()).filter(Boolean):[]})));
-    if(c) setCatalog(c.map(p=>({...p,sizes:p.sizes?p.sizes.split(",").map(x=>x.trim()).filter(Boolean):[],estimatedPrice:p.estimatedprice||p.estimatedPrice||0,leadTime:p.leadtime||p.leadTime||""})));
+    if(c) setCatalog(c.map(p=>({...p,sizes:p.sizes?p.sizes.split(",").map(x=>x.trim()).filter(Boolean):[]})));
     if(o) setOrders(o);
     if(cats&&cats.length>0) setCategories(cats.map(c=>c.name));
     setLoading(false);
@@ -704,7 +724,7 @@ function AdminApp({ onLogout }) {
   };
 
   const acceptCustomRequest = (order) => {
-    setCfRaw({name:"",brand:"",category:order.productCategory||categories[0]||"",color:"",estimatedPrice:"",deposit:"",ref:"",leadTime:"",description:order.clientSize?`Pointure client : ${order.clientSize}`:"",img:order.productImg||null,sizes:order.clientSize||""});
+    setCfRaw({name:"",brand:"",category:order.productcategory||categories[0]||"",color:"",estimatedPrice:"",deposit:"",ref:"",leadTime:"",description:order.clientsize?`Pointure client : ${order.clientsize}`:"",img:order.productimg||null,sizes:order.clientsize||""});
     updateOrder(order.id,{status:"en_attente"});
     setTab("catalog");
     setShowAddCatalog(true);
@@ -723,18 +743,21 @@ function AdminApp({ onLogout }) {
   const addCatalog = async() => {
     if(!cf.name||!cf.estimatedPrice) return;
     const d = {
-      name:cf.name, brand:cf.brand||"",
-      category:cf.category||categories[0]||"",
-      color:cf.color||"",
-      estimatedprice:Number(cf.estimatedPrice),
-      deposit:Number(cf.deposit)||0,
-      ref:cf.ref||"", leadtime:cf.leadTime||"",
-      description:cf.description||"",
-      img:cf.img||null, sizes:cf.sizes||"",
+      name: cf.name,
+      brand: cf.brand||"",
+      category: cf.category||categories[0]||"",
+      color: cf.color||"",
+      estimatedprice: Number(cf.estimatedPrice),
+      deposit: Number(cf.deposit)||0,
+      ref: cf.ref||"",
+      leadtime: cf.leadTime||"",
+      description: cf.description||"",
+      img: cf.img||null,
+      sizes: cf.sizes||"",
     };
     const {data,error} = await supabase.from("catalog").insert([d]).select();
     if(error){console.error("addCatalog:",error);alert("Erreur catalogue: "+error.message);return;}
-    if(data&&data[0]) setCatalog(c=>[{...data[0],estimatedPrice:data[0].estimatedprice,leadTime:data[0].leadtime,sizes:cf.sizes?cf.sizes.split(",").map(x=>x.trim()).filter(Boolean):[]}, ...c]);
+    if(data&&data[0]) setCatalog(c=>[{...data[0],sizes:cf.sizes?cf.sizes.split(",").map(x=>x.trim()).filter(Boolean):[]}, ...c]);
     setCfRaw({name:"",brand:"",category:categories[0]||"",color:"",estimatedPrice:"",deposit:"",ref:"",leadTime:"",description:"",img:null,sizes:""});
     setShowAddCatalog(false);
   };
@@ -746,7 +769,7 @@ function AdminApp({ onLogout }) {
       setStock(s=>s.map(p=>p.id===editItem.id?{...editItem,price:Number(editItem.price)}:p));
     } else {
       const ss = typeof editItem.sizes==="string"?editItem.sizes:(editItem.sizes||[]).join(", ");
-      const {error} = await supabase.from("catalog").update({name:editItem.name,brand:editItem.brand,estimatedprice:Number(editItem.estimatedPrice),deposit:Number(editItem.deposit),leadtime:editItem.leadTime,color:editItem.color,ref:editItem.ref,description:editItem.description||"",img:editItem.img,sizes:ss}).eq("id",editItem.id);
+      const {error} = await supabase.from("catalog").update({name:editItem.name,brand:editItem.brand,estimatedprice:Number(editItem.estimatedprice||editItem.estimatedPrice||0),deposit:Number(editItem.deposit),leadtime:editItem.leadtime||editItem.leadTime||"",color:editItem.color,ref:editItem.ref,description:editItem.description||"",img:editItem.img,sizes:ss}).eq("id",editItem.id);
       if(error){console.error("saveEdit catalog:",error);return;}
       setCatalog(c=>c.map(p=>p.id===editItem.id?{...editItem,sizes:ss.split(",").map(x=>x.trim()).filter(Boolean)}:p));
     }
@@ -755,11 +778,11 @@ function AdminApp({ onLogout }) {
 
   const genEmail = (order,type) => {
     const nom = `${order.prenom||""} ${order.nom||""}`.trim()||order.email;
-    const solde = fmt((order.totalPrice||0)-(order.depositPaid||0));
+    const solde = fmt((order.totalprice||0)-(order.depositpaid||0));
     const t = {
-      confirmation:{subject:`✨ Confirmation — ${order.order_id}`,body:`Bonjour ${nom},\n\nNous avons bien reçu votre ${order.depositPaid<order.totalPrice?"acompte de "+fmt(order.depositPaid):"paiement"} pour : ${order.product} (réf. ${order.ref}).\n\nVotre commande : ${order.order_id}.\n${order.depositPaid<order.totalPrice?"\nDélai estimé : "+(order.leadTime||"quelques semaines")+"\nVous serez notifié dès que votre article est disponible.":""}\n\nPour suivre votre commande, allez sur le site et cliquez "Mes commandes".\n\nMerci de votre confiance,\nLK Luxe`},
-      disponible:{subject:`🎉 Votre article est disponible ! — ${order.order_id}`,body:`Bonjour ${nom},\n\nBonne nouvelle ! Votre ${order.product} est disponible.\n\nAcompte déjà réglé : ${fmt(order.depositPaid)}\nSolde restant : ${solde}\n\nRendez-vous sur notre site, cliquez "Mes commandes" avec votre email ${order.email}.\n\nCordialement,\nLK Luxe`},
-      expediee:{subject:`📦 Expédié — ${order.order_id}`,body:`Bonjour ${nom},\n\nVotre ${order.product} est en route via Mondial Relay !\n\nAdresse : ${order.adresse||""}, ${order.codePostal||""} ${order.ville||""}\n\nVous recevrez le numéro de suivi sous peu.\n\nMerci de votre confiance,\nLK Luxe`},
+      confirmation:{subject:`✨ Confirmation — ${order.order_id}`,body:`Bonjour ${nom},\n\nNous avons bien reçu votre ${order.depositpaid<order.totalprice?"acompte de "+fmt(order.depositpaid):"paiement"} pour : ${order.product} (réf. ${order.ref}).\n\nVotre commande : ${order.order_id}.\n${order.depositpaid<order.totalprice?"\nDélai estimé : "+(order.leadtime||"quelques semaines")+"\nVous serez notifié dès que votre article est disponible.":""}\n\nPour suivre votre commande, allez sur le site et cliquez "Mes commandes".\n\nMerci de votre confiance,\nLK Luxe`},
+      disponible:{subject:`🎉 Votre article est disponible ! — ${order.order_id}`,body:`Bonjour ${nom},\n\nBonne nouvelle ! Votre ${order.product} est disponible.\n\nAcompte déjà réglé : ${fmt(order.depositpaid)}\nSolde restant : ${solde}\n\nRendez-vous sur notre site, cliquez "Mes commandes" avec votre email ${order.email}.\n\nCordialement,\nLK Luxe`},
+      expediee:{subject:`📦 Expédié — ${order.order_id}`,body:`Bonjour ${nom},\n\nVotre ${order.product} est en route via Mondial Relay !\n\nAdresse : ${order.adresse||""}, ${order.codepostal||""} ${order.ville||""}\n\nVous recevrez le numéro de suivi sous peu.\n\nMerci de votre confiance,\nLK Luxe`},
     };
     return t[type]||{subject:"",body:""};
   };
@@ -813,15 +836,15 @@ function AdminApp({ onLogout }) {
                         <div style={{fontSize:18,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600,marginBottom:4}}>{order.product}</div>
                         <div style={{fontSize:12,color:C.textMid,lineHeight:1.8}}>
                           <strong>{order.prenom} {order.nom}</strong> · <span style={{color:C.accent}}>{order.email}</span> · {order.tel}<br/>
-                          📦 {order.livraison==="point_relais"?"Point Relais":"Domicile"} — {order.adresse}, {order.codePostal} {order.ville}<br/>
+                          📦 {order.livraison==="point_relais"?"Point Relais":"Domicile"} — {order.adresse}, {order.codepostal} {order.ville}<br/>
                           💳 {order.paiement==="revolut"?"Revolut":"PayPal"} · {order.date}
-                          {order.clientSize&&<><br/>👟 Pointure : <strong>{order.clientSize}</strong></>}
+                          {order.clientsize&&<><br/>👟 Pointure : <strong>{order.clientsize}</strong></>}
                         </div>
                       </div>
                       <div style={{textAlign:"right"}}>
                         <div style={{fontSize:10,color:C.textLight,letterSpacing:1}}>PAYÉ</div>
-                        <div style={{fontSize:24,color:C.green,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{fmt(order.depositPaid||0)}</div>
-                        {(order.totalPrice||0)>(order.depositPaid||0)&&<div style={{fontSize:13,color:C.accent}}>Solde : {fmt((order.totalPrice||0)-(order.depositPaid||0))}</div>}
+                        <div style={{fontSize:24,color:C.green,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{fmt(order.depositpaid||0)}</div>
+                        {(order.totalprice||0)>(order.depositpaid||0)&&<div style={{fontSize:13,color:C.accent}}>Solde : {fmt((order.totalprice||0)-(order.depositpaid||0))}</div>}
                       </div>
                     </div>
                     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
@@ -856,21 +879,21 @@ function AdminApp({ onLogout }) {
                           <StatusPill s={order.status}/>
                           <span style={{fontSize:10,color:C.textLight,fontFamily:"Jost, sans-serif"}}>{order.date}</span>
                         </div>
-                        <div style={{fontSize:18,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600,marginBottom:8}}>{getEmoji(order.productCategory)} {order.productCategory}</div>
+                        <div style={{fontSize:18,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600,marginBottom:8}}>{getEmoji(order.productcategory)} {order.productcategory}</div>
                         <div style={{fontSize:14,color:C.text,fontFamily:"Jost, sans-serif",fontWeight:600,marginBottom:4}}>{order.prenom} {order.nom}</div>
                         <div style={{fontSize:13,color:C.accent,fontFamily:"Jost, sans-serif",marginBottom:8}}>📞 {order.tel||order.email}</div>
-                        {order.clientSize&&(
+                        {order.clientsize&&(
                           <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"#F5EEF8",border:"1px solid #D4B8E0",borderRadius:8,padding:"6px 14px"}}>
                             <span style={{fontSize:16}}>👟</span>
-                            <span style={{fontSize:13,color:"#6B4D7E",fontWeight:600,fontFamily:"Jost, sans-serif"}}>Pointure : {order.clientSize}</span>
+                            <span style={{fontSize:13,color:"#6B4D7E",fontWeight:600,fontFamily:"Jost, sans-serif"}}>Pointure : {order.clientsize}</span>
                           </div>
                         )}
                       </div>
-                      {order.productImg&&(
+                      {order.productimg&&(
                         <div style={{flexShrink:0}}>
                           <div style={{fontSize:10,color:C.textLight,letterSpacing:2,marginBottom:6,fontFamily:"Jost, sans-serif"}}>PHOTO CLIENT</div>
-                          <img src={order.productImg} alt="" style={{width:140,height:140,objectFit:"cover",borderRadius:12,border:`2px solid #D4B8E0`,cursor:"pointer"}} onClick={()=>setViewingCustom(order.productImg)}/>
-                          <div style={{fontSize:10,color:"#8B6B9E",marginTop:4,textAlign:"center",fontFamily:"Jost, sans-serif",cursor:"pointer"}} onClick={()=>setViewingCustom(order.productImg)}>🔍 Agrandir</div>
+                          <img src={order.productimg} alt="" style={{width:140,height:140,objectFit:"cover",borderRadius:12,border:`2px solid #D4B8E0`,cursor:"pointer"}} onClick={()=>setViewingCustom(order.productimg)}/>
+                          <div style={{fontSize:10,color:"#8B6B9E",marginTop:4,textAlign:"center",fontFamily:"Jost, sans-serif",cursor:"pointer"}} onClick={()=>setViewingCustom(order.productimg)}>🔍 Agrandir</div>
                         </div>
                       )}
                     </div>
@@ -927,13 +950,13 @@ function AdminApp({ onLogout }) {
                     <div style={{padding:16}}>
                       <div style={{fontSize:9,color:C.textLight,letterSpacing:2,marginBottom:3}}>{p.brand}</div>
                       <div style={{fontSize:15,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600,marginBottom:2}}>{p.name}</div>
-                      <div style={{fontSize:11,color:C.textMid,marginBottom:10}}>{p.color} · ⏱ {p.leadTime||p.leadtime}</div>
+                      <div style={{fontSize:11,color:C.textMid,marginBottom:10}}>{p.color} · ⏱ {p.leadtime}</div>
                       <div style={{display:"flex",justifyContent:"space-between",marginBottom:14}}>
-                        <div><div style={{fontSize:9,color:C.textLight}}>ESTIMÉ</div><div style={{fontSize:20,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{fmt(p.estimatedPrice||p.estimatedprice||0)}</div></div>
+                        <div><div style={{fontSize:9,color:C.textLight}}>ESTIMÉ</div><div style={{fontSize:20,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{fmt(p.estimatedprice||0)}</div></div>
                         <div style={{textAlign:"right"}}><div style={{fontSize:9,color:C.textLight}}>ACOMPTE</div><div style={{fontSize:20,color:C.green,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{fmt(p.deposit||0)}</div></div>
                       </div>
                       <div style={{display:"flex",gap:8}}>
-                        <Btn sm variant="ghost" onClick={()=>{setEditItem({...p,estimatedPrice:p.estimatedprice||p.estimatedPrice||0,leadTime:p.leadtime||p.leadTime||"",sizes:p.sizes?p.sizes.join(", "):""}); setEditType("catalog");}}>✏️ Modifier</Btn>
+                        <Btn sm variant="ghost" onClick={()=>{setEditItem({...p,sizes:p.sizes?p.sizes.join(", "):""}); setEditType("catalog");}}>✏️ Modifier</Btn>
                         <Btn sm variant="red" onClick={async()=>{await supabase.from("catalog").delete().eq("id",p.id);setCatalog(c=>c.filter(x=>x.id!==p.id));}}>Retirer</Btn>
                       </div>
                     </div>
@@ -1017,9 +1040,9 @@ function AdminApp({ onLogout }) {
             {editType==="stock"
               ?<Field label="Prix (€)" type="number" value={editItem.price} onChange={e=>setEditItem(i=>({...i,price:e.target.value}))} required/>
               :<>
-                <Field label="Prix estimé (€)" type="number" value={editItem.estimatedPrice||""} onChange={e=>setEditItem(i=>({...i,estimatedPrice:e.target.value}))}/>
+                <Field label="Prix estimé (€)" type="number" value={editItem.estimatedprice||""} onChange={e=>setEditItem(i=>({...i,estimatedprice:e.target.value}))}/>
                 <Field label="Acompte (€)" type="number" value={editItem.deposit||""} onChange={e=>setEditItem(i=>({...i,deposit:e.target.value}))}/>
-                <Field label="Délai estimé" value={editItem.leadTime||""} onChange={e=>setEditItem(i=>({...i,leadTime:e.target.value}))}/>
+                <Field label="Délai estimé" value={editItem.leadtime||""} onChange={e=>setEditItem(i=>({...i,leadtime:e.target.value}))}/>
               </>}
             <Field label="Couleur" value={editItem.color||""} onChange={e=>setEditItem(i=>({...i,color:e.target.value}))}/>
             <Field label="Référence" value={editItem.ref||""} onChange={e=>setEditItem(i=>({...i,ref:e.target.value}))}/>
