@@ -690,6 +690,8 @@ function AdminApp({ onLogout }) {
   const [emailPreview,setEmailPreview] = useState(null);
   const [newCat,setNewCat] = useState("");
   const [viewingCustom,setViewingCustom] = useState(null);
+  const [shipModal,setShipModal] = useState(null);
+  const [shipTracking,setShipTracking] = useState("");
   const [sf,setSfRaw] = useState({name:"",brand:"",category:"",color:"",price:"",ref:"",description:"",img:null});
   const [cf,setCfRaw] = useState({name:"",brand:"",category:"",color:"",estimatedPrice:"",deposit:"",ref:"",leadTime:"",description:"",img:null,sizes:""});
   const ssf = k => e => setSfRaw(f=>({...f,[k]:typeof e==="string"?e:e.target.value}));
@@ -849,11 +851,11 @@ function AdminApp({ onLogout }) {
                     </div>
                     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                       {order.status==="paiement_a_verifier"&&<Btn sm variant="green" onClick={()=>updateOrder(order.id,{status:"paiement_confirme"})}>✓ Paiement reçu</Btn>}
-                      {order.status==="paiement_confirme"&&<Btn sm onClick={async()=>{const o=await updateOrder(order.id,{status:"expediee"});if(o)setEmailPreview({order:o,type:"expediee"});}}>🚚 Expédier</Btn>}
+                      {order.status==="paiement_confirme"&&<Btn sm onClick={()=>{setShipModal(order);setShipTracking("");}}>🚚 Expédier</Btn>}
                       {order.status==="en_attente"&&order.type==="catalog"&&<Btn sm variant="ghost" onClick={()=>updateOrder(order.id,{status:"commande"})}>✓ Commandé fournisseur</Btn>}
                       {["en_attente","commande"].includes(order.status)&&<Btn sm variant="green" onClick={async()=>{const o=await updateOrder(order.id,{status:"disponible"});if(o)setEmailPreview({order:o,type:"disponible"});}}>📦 Disponible → Notifier</Btn>}
                       {order.status==="disponible"&&<span style={{fontSize:11,color:C.gold,fontFamily:"Jost, sans-serif",padding:"8px 14px",background:C.gold+"15",borderRadius:8,border:`1px solid ${C.gold}30`}}>⏳ En attente du solde client</span>}
-                      {order.status==="solde_recu"&&<Btn sm onClick={async()=>{const o=await updateOrder(order.id,{status:"expediee"});if(o)setEmailPreview({order:o,type:"expediee"});}}>🚚 Expédier</Btn>}
+                      {order.status==="solde_recu"&&<Btn sm onClick={()=>{setShipModal(order);setShipTracking("");}}>🚚 Expédier</Btn>}
                       <Btn sm variant="ghost" onClick={()=>setEmailPreview({order,type:"confirmation"})}>📧 Email</Btn>
                       {!["annulee","expediee"].includes(order.status)&&<Btn sm variant="red" onClick={()=>updateOrder(order.id,{status:"annulee"})}>Annuler</Btn>}
                     </div>
@@ -1055,6 +1057,33 @@ function AdminApp({ onLogout }) {
           <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
             <Btn variant="ghost" onClick={()=>setEditItem(null)}>Annuler</Btn>
             <Btn onClick={saveEdit}>Enregistrer</Btn>
+          </div>
+        </Modal>
+      )}
+
+      {shipModal&&(
+        <Modal title="🚚 Confirmer l'expédition" onClose={()=>setShipModal(null)}>
+          <div style={{marginBottom:18}}>
+            <div style={{fontSize:13,color:C.textMid,fontFamily:"Jost, sans-serif",marginBottom:18,lineHeight:1.6}}>
+              Commande <strong style={{color:C.accent}}>{shipModal.order_id}</strong> — {shipModal.prenom} {shipModal.nom}
+            </div>
+            <Field
+              label="Numéro de suivi"
+              value={shipTracking}
+              onChange={e=>setShipTracking(e.target.value)}
+              placeholder="Ex : 6C12345678901"
+              hint="Laissez vide si le numéro n'est pas encore disponible."
+            />
+          </div>
+          <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
+            <Btn variant="ghost" onClick={()=>setShipModal(null)}>Annuler</Btn>
+            <Btn onClick={async()=>{
+              const changes={status:"expediee"};
+              if(shipTracking.trim()) changes.tracking=shipTracking.trim();
+              const o=await updateOrder(shipModal.id,changes);
+              setShipModal(null);
+              if(o) setEmailPreview({order:o,type:"expediee"});
+            }}>🚚 Confirmer l'expédition</Btn>
           </div>
         </Modal>
       )}
