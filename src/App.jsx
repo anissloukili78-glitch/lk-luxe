@@ -711,6 +711,7 @@ function ClientShop() {
     const refs = [...new Set(cart.map(i=>i.ref||"").filter(Boolean))].join(", ");
     const depositpaid = cart.reduce((s,i)=>s+(i._isCatalog?(i.deposit||0):i.price),0);
     const totalprice = cart.reduce((s,i)=>s+(i._isCatalog?(i.estimatedprice||0):i.price),0);
+    const itemsToStore = cart.map(i=>({name:i.name,brand:i.brand,price:i._isCatalog?(i.deposit||0):i.price,ref:i.ref||"",category:i.category}));
     const orderData = {
       order_id:    uid(),
       prenom:      form.prenom,
@@ -730,12 +731,10 @@ function ClientShop() {
       status:      "paiement_a_verifier",
       date:        new Date().toISOString().slice(0,10),
       iscustom:    false,
+      items:       JSON.stringify(itemsToStore),
     };
-    console.log("orderData à insérer:", orderData);
-    const {data, error} = await supabase.from("orders").insert([orderData]).select();
-    console.log("résultat insert:", data, error);
+    const {error} = await supabase.from("orders").insert([orderData]);
     if(error){console.error("handleCartOrder:",error);alert("Erreur lors de la commande : "+error.message);return false;}
-    if(!data||data.length===0){console.error("insert sans retour",{data,error});alert("Insert sans confirmation Supabase.");return false;}
     for(const item of stockItems){
       await supabase.from("stock").update({available:false}).eq("id",item.id);
     }
