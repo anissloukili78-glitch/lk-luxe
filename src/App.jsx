@@ -208,7 +208,150 @@ function CustomRequestForm({ onClose, onConfirm }) {
   );
 }
 
-function ProductCard({ p, onBuy, isCatalog }) {
+function CartModal({ cart, onClose, onOrder, onRemove }) {
+  const total = cart.reduce((s,i)=>s+(i._isCatalog?(i.deposit||0):i.price),0);
+  return (
+    <Modal title={`🛒 Mon panier — ${cart.length} article${cart.length>1?"s":""}`} onClose={onClose} wide>
+      {cart.length===0
+        ?<div style={{textAlign:"center",padding:40,color:C.textLight,fontFamily:"Jost, sans-serif"}}>Votre panier est vide.</div>
+        :<>
+          <div style={{marginBottom:20}}>
+            {cart.map((item,i)=>(
+              <div key={item._cartId} style={{display:"flex",alignItems:"center",gap:14,padding:"14px 0",borderBottom:i<cart.length-1?`1px solid ${C.border}`:"none"}}>
+                <div style={{width:52,height:52,borderRadius:10,background:C.bgDark,flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22}}>
+                  {item.img?<img src={item.img} style={{width:"100%",height:"100%",objectFit:"cover"}} alt=""/>:getEmoji(item.category)}
+                </div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:9,color:C.textLight,letterSpacing:2,textTransform:"uppercase",fontFamily:"Jost, sans-serif"}}>{item.brand}</div>
+                  <div style={{fontSize:15,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.name}</div>
+                  {item._isCatalog&&<div style={{fontSize:9,color:C.gold,letterSpacing:1,textTransform:"uppercase",fontFamily:"Jost, sans-serif"}}>Sur commande</div>}
+                  {item._clientSize&&<div style={{fontSize:11,color:"#8B6B9E",fontFamily:"Jost, sans-serif"}}>👟 Pointure : {item._clientSize}</div>}
+                </div>
+                <div style={{textAlign:"right",flexShrink:0}}>
+                  <div style={{fontSize:17,color:item._isCatalog?C.green:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{fmt(item._isCatalog?(item.deposit||0):item.price)}</div>
+                  {item._isCatalog&&<div style={{fontSize:9,color:C.textLight,letterSpacing:1,fontFamily:"Jost, sans-serif"}}>acompte</div>}
+                </div>
+                <button onClick={()=>onRemove(item._cartId)} style={{background:"none",border:"none",color:C.red,cursor:"pointer",fontSize:22,lineHeight:1,padding:"0 2px",flexShrink:0}}>×</button>
+              </div>
+            ))}
+          </div>
+          <div style={{background:C.bg,borderRadius:12,padding:"14px 18px",marginBottom:16,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div>
+              <div style={{fontSize:10,color:C.textLight,letterSpacing:2,textTransform:"uppercase",fontFamily:"Jost, sans-serif"}}>Total à régler</div>
+              <div style={{fontSize:28,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{fmt(total)}</div>
+            </div>
+            <Btn variant="gold" onClick={onOrder}>Commander →</Btn>
+          </div>
+          <div style={{fontSize:11,color:C.textLight,lineHeight:1.6,fontFamily:"Jost, sans-serif",textAlign:"center"}}>Articles sur commande : seul l'acompte est dû maintenant.</div>
+        </>
+      }
+    </Modal>
+  );
+}
+
+function CartOrderForm({ cart, clientEmail, onClose, onConfirm }) {
+  const [step,setStep] = useState(1);
+  const [loading,setLoading] = useState(false);
+  const [form,setForm] = useState({nom:"",prenom:"",email:clientEmail||"",tel:"",adresse:"",codePostal:"",ville:"",livraison:"point_relais",paiement:"revolut"});
+  const set = k => e => setForm(f=>({...f,[k]:e.target.value}));
+  const amount = cart.reduce((s,i)=>s+(i._isCatalog?(i.deposit||0):i.price),0);
+  const step1ok = form.nom&&form.prenom&&form.email&&form.tel;
+  const step2ok = form.adresse&&form.codePostal&&form.ville;
+  const steps = ["Coordonnées","Livraison","Paiement","Validation","Confirmé"];
+  return (
+    <Modal title="Commander — Panier" onClose={onClose} wide>
+      <div style={{display:"flex",marginBottom:28,position:"relative"}}>
+        {steps.map((s,i)=>(
+          <div key={i} style={{flex:1,textAlign:"center"}}>
+            <div style={{width:28,height:28,borderRadius:"50%",background:step>i+1?C.green:step===i+1?C.accent:C.border,color:step>=i+1?C.white:C.textLight,fontSize:12,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 6px",fontFamily:"Jost, sans-serif"}}>{step>i+1?"✓":i+1}</div>
+            <div style={{fontSize:9,letterSpacing:1.5,textTransform:"uppercase",color:step===i+1?C.accent:C.textLight,fontFamily:"Jost, sans-serif"}}>{s}</div>
+          </div>
+        ))}
+        <div style={{position:"absolute",top:14,left:"12.5%",right:"12.5%",height:1,background:C.border,zIndex:-1}}/>
+      </div>
+      <div style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:12,padding:"12px 16px",marginBottom:22}}>
+        {cart.map((item,i)=>(
+          <div key={item._cartId} style={{display:"flex",justifyContent:"space-between",alignItems:"center",paddingBottom:i<cart.length-1?8:0,marginBottom:i<cart.length-1?8:0,borderBottom:i<cart.length-1?`1px solid ${C.border}`:"none"}}>
+            <div style={{fontSize:13,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{item.name}{item._clientSize&&<span style={{fontSize:11,color:"#8B6B9E",fontWeight:400}}> · {item._clientSize}</span>}</div>
+            <div style={{fontSize:14,color:item._isCatalog?C.green:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600,flexShrink:0,marginLeft:12}}>{fmt(item._isCatalog?(item.deposit||0):item.price)}</div>
+          </div>
+        ))}
+        <div style={{display:"flex",justifyContent:"space-between",marginTop:10,paddingTop:10,borderTop:`2px solid ${C.border}`}}>
+          <span style={{fontSize:11,color:C.textLight,letterSpacing:1,fontFamily:"Jost, sans-serif"}}>TOTAL</span>
+          <span style={{fontSize:20,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600}}>{fmt(amount)}</span>
+        </div>
+      </div>
+      {step===1&&(
+        <div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 16px"}}>
+            <Field label="Prénom" value={form.prenom} onChange={set("prenom")} required/>
+            <Field label="Nom" value={form.nom} onChange={set("nom")} required/>
+          </div>
+          <Field label="Email" type="email" value={form.email} onChange={set("email")} required hint="📧 Utilisez cet email pour suivre votre commande via 'Mes commandes'."/>
+          <Field label="Téléphone" type="tel" value={form.tel} onChange={set("tel")} required placeholder="06 XX XX XX XX"/>
+          <div style={{display:"flex",justifyContent:"flex-end",gap:10,marginTop:8}}>
+            <Btn variant="ghost" onClick={onClose}>Annuler</Btn>
+            <Btn onClick={()=>setStep(2)} disabled={!step1ok}>Continuer →</Btn>
+          </div>
+        </div>
+      )}
+      {step===2&&(
+        <div>
+          <Sel label="Mode de livraison" value={form.livraison} onChange={set("livraison")} options={[{v:"point_relais",l:"📦 Point Relais Mondial Relay"},{v:"domicile",l:"🏠 Livraison à domicile"}]}/>
+          <Field label="Adresse complète" value={form.adresse} onChange={set("adresse")} required placeholder="10 rue de la Paix"/>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 2fr",gap:"0 14px"}}>
+            <Field label="Code postal" value={form.codePostal} onChange={set("codePostal")} required placeholder="75001"/>
+            <Field label="Ville" value={form.ville} onChange={set("ville")} required placeholder="Paris"/>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",gap:10,marginTop:8}}>
+            <Btn variant="ghost" onClick={()=>setStep(1)}>← Retour</Btn>
+            <Btn onClick={()=>setStep(3)} disabled={!step2ok}>Continuer →</Btn>
+          </div>
+        </div>
+      )}
+      {step===3&&(
+        <div>
+          <Sel label="Mode de paiement" value={form.paiement} onChange={set("paiement")} options={[{v:"revolut",l:"💳 Revolut"},{v:"paypal",l:"🅿️ PayPal"}]}/>
+          <div style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:12,padding:18,marginBottom:20}}>
+            <div style={{fontSize:13,color:C.text,fontFamily:"Jost, sans-serif",lineHeight:1.8}}>Vous serez redirigé vers {form.paiement==="revolut"?"Revolut":"PayPal"} pour régler <strong style={{color:C.accent}}>{fmt(amount)}</strong>.</div>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",gap:10}}>
+            <Btn variant="ghost" onClick={()=>setStep(2)}>← Retour</Btn>
+            <Btn variant="gold" onClick={()=>{window.open(form.paiement==="revolut"?REVOLUT_LINK:PAYPAL_LINK,"_blank");setStep(4);}}>Payer — {fmt(amount)}</Btn>
+          </div>
+        </div>
+      )}
+      {step===4&&(
+        <div>
+          <div style={{background:"#FFF8EC",border:`1px solid ${C.gold}40`,borderRadius:14,padding:22,marginBottom:20,textAlign:"center"}}>
+            <div style={{fontSize:40,marginBottom:12}}>💳</div>
+            <div style={{fontSize:16,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600,marginBottom:8}}>Avez-vous bien effectué le paiement ?</div>
+            <div style={{fontSize:13,color:C.textMid,lineHeight:1.8,fontFamily:"Jost, sans-serif"}}>Revenez ici après avoir réglé <strong style={{color:C.accent}}>{fmt(amount)}</strong>.</div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            <Btn variant="green" full onClick={async()=>{setLoading(true);await onConfirm(form);setLoading(false);setStep(5);}} disabled={loading}>{loading?"Enregistrement…":"✓ J'ai effectué mon paiement"}</Btn>
+            <Btn variant="ghost" full onClick={()=>window.open(form.paiement==="revolut"?REVOLUT_LINK:PAYPAL_LINK,"_blank")}>Rouvrir le lien</Btn>
+            <Btn variant="ghost" full onClick={()=>setStep(3)}>← Retour</Btn>
+          </div>
+        </div>
+      )}
+      {step===5&&(
+        <div style={{textAlign:"center",padding:"20px 0"}}>
+          <div style={{fontSize:64,marginBottom:16}}>🛍️</div>
+          <div style={{fontSize:24,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600,marginBottom:8}}>Commande enregistrée !</div>
+          <div style={{fontSize:13,color:C.textMid,lineHeight:1.9,marginBottom:24,fontFamily:"Jost, sans-serif"}}>
+            Pour suivre votre commande :<br/>
+            Cliquez sur <strong style={{color:C.accent}}>"Mes commandes"</strong> en haut de la page<br/>
+            et entrez votre email <strong style={{color:C.accent}}>{form.email}</strong>
+          </div>
+          <Btn onClick={onClose}>Fermer</Btn>
+        </div>
+      )}
+    </Modal>
+  );
+}
+
+function ProductCard({ p, onBuy, onAddToCart, isCatalog }) {
   const [hover,setHover] = useState(false);
   return (
     <div onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)}
@@ -236,7 +379,10 @@ function ProductCard({ p, onBuy, isCatalog }) {
           </div>
           :<div style={{fontSize:26,color:C.text,fontFamily:"Cormorant, Georgia, serif",fontWeight:600,marginBottom:16}}>{fmt(p.price)}</div>}
         {isCatalog&&<div style={{fontSize:11,color:C.textLight,marginBottom:14,fontFamily:"Jost, sans-serif"}}>⏱ Délai estimé : {p.leadtime}</div>}
-        <Btn full onClick={()=>onBuy(p)}>{isCatalog?"Réserver avec acompte":"Acquérir"}</Btn>
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          <Btn full onClick={()=>onBuy(p)}>{isCatalog?"Réserver avec acompte":"Acquérir"}</Btn>
+          <Btn full variant="ghost" onClick={()=>onAddToCart(p)}>🛒 Ajouter au panier</Btn>
+        </div>
       </div>
     </div>
   );
@@ -488,6 +634,11 @@ function ClientShop() {
   const [emailSet,setEmailSet] = useState(false);
   const [emailInput,setEmailInput] = useState("");
   const [ordering,setOrdering] = useState(null);
+  const [cart,setCart] = useState([]);
+  const [cartOpen,setCartOpen] = useState(false);
+  const [cartCheckout,setCartCheckout] = useState(false);
+  const [sizePrompt,setSizePrompt] = useState(null);
+  const [sizeInput,setSizeInput] = useState("");
   const [myOrdersOpen,setMyOrdersOpen] = useState(false);
   const [contactOpen,setContactOpen] = useState(false);
   const [customRequestOpen,setCustomRequestOpen] = useState(false);
@@ -549,6 +700,35 @@ function ClientShop() {
     if(!emailSet){ setClientEmail(form.email.toLowerCase().trim()); setEmailSet(true); }
   };
 
+  const addToCart = (product, isCatalog, clientSize=null) => {
+    if(!isCatalog&&cart.find(i=>i.id===product.id&&!i._isCatalog)) return;
+    setCart(c=>[...c,{...product,_cartId:Date.now()+Math.random(),_isCatalog:isCatalog,_clientSize:clientSize}]);
+  };
+
+  const handleCartOrder = async(form) => {
+    const stockItems = cart.filter(i=>!i._isCatalog);
+    const productNames = cart.map(i=>`${i.brand} ${i.name}`.trim()).join(" + ");
+    const refs = [...new Set(cart.map(i=>i.ref||"").filter(Boolean))].join(", ");
+    const depositpaid = cart.reduce((s,i)=>s+(i._isCatalog?(i.deposit||0):i.price),0);
+    const totalprice = cart.reduce((s,i)=>s+(i._isCatalog?(i.estimatedprice||0):i.price),0);
+    const itemsJson = cart.map(i=>({name:i.name,brand:i.brand,price:i._isCatalog?(i.deposit||0):i.price,ref:i.ref||"",img:i.img||null,category:i.category,isCatalog:i._isCatalog,clientSize:i._clientSize||null}));
+    const orderData = {
+      order_id:uid(),prenom:form.prenom,nom:form.nom,email:form.email.toLowerCase().trim(),tel:form.tel,
+      adresse:form.adresse,codepostal:form.codePostal,ville:form.ville,livraison:form.livraison,paiement:form.paiement,
+      product:productNames,ref:refs,type:stockItems.length>0?"stock":"catalog",
+      depositpaid,totalprice,status:"paiement_a_verifier",
+      date:new Date().toISOString().slice(0,10),iscustom:false,items:itemsJson,
+    };
+    const {error} = await supabase.from("orders").insert([orderData]);
+    if(error){console.error("handleCartOrder:",error);return;}
+    for(const item of stockItems){
+      await supabase.from("stock").update({available:false}).eq("id",item.id);
+    }
+    setStock(s=>s.filter(p=>!stockItems.find(i=>i.id===p.id)));
+    if(!emailSet){setClientEmail(form.email.toLowerCase().trim());setEmailSet(true);}
+    setCart([]);
+  };
+
   const handleCustomRequest = async(form) => {
     const emailVal = form.contact.includes("@") ? form.contact.toLowerCase().trim() : "";
     const {error} = await supabase.from("orders").insert([{
@@ -600,6 +780,9 @@ function ClientShop() {
             <div style={{fontSize:9,letterSpacing:4,color:C.textLight,textTransform:"uppercase",marginTop:1}}>Le prix du faux, la qualité du vrai</div>
           </div>
           <div style={{display:"flex",gap:10,alignItems:"center"}}>
+            <button onClick={()=>setCartOpen(true)} style={{position:"relative",background:cart.length>0?C.accentLight:"none",border:`1px solid ${cart.length>0?C.accent:C.border}`,borderRadius:8,padding:"6px 14px",color:cart.length>0?C.accentDark:C.textMid,fontSize:11,letterSpacing:1.5,textTransform:"uppercase",cursor:"pointer",fontFamily:"Jost, sans-serif",fontWeight:cart.length>0?600:400}}>
+              🛒 Panier{cart.length>0&&<span style={{marginLeft:6,background:C.accent,color:C.white,borderRadius:20,padding:"1px 7px",fontSize:10,fontWeight:700}}>{cart.length}</span>}
+            </button>
             <button onClick={()=>setMyOrdersOpen(true)} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:8,padding:"6px 14px",color:C.textMid,fontSize:11,letterSpacing:1.5,textTransform:"uppercase",cursor:"pointer",fontFamily:"Jost, sans-serif"}}>📦 Mes commandes</button>
             <button onClick={()=>setContactOpen(true)} style={{background:"none",border:"none",color:C.textLight,fontSize:11,letterSpacing:2,textTransform:"uppercase",cursor:"pointer",fontFamily:"Jost, sans-serif",padding:"6px 12px"}}>Contact</button>
           </div>
@@ -643,7 +826,7 @@ function ClientShop() {
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(290px,1fr))",gap:24}}>
             {tab==="catalog"&&<CustomRequestCard onRequest={()=>setCustomRequestOpen(true)}/>}
             {(tab==="stock"?filteredStock:filteredCatalog).map(p=>(
-              <ProductCard key={p.id} p={p} isCatalog={tab==="catalog"} onBuy={(prod)=>setOrdering({prod,isCatalog:tab==="catalog"})}/>
+              <ProductCard key={p.id} p={p} isCatalog={tab==="catalog"} onBuy={(prod)=>setOrdering({prod,isCatalog:tab==="catalog"})} onAddToCart={(prod)=>{if(tab==="catalog"&&isShoe(prod.category)){setSizePrompt(prod);setSizeInput("");}else{addToCart(prod,tab==="catalog");}}} />
             ))}
             {((tab==="stock"&&filteredStock.length===0)||(tab==="catalog"&&filteredCatalog.length===0))&&(
               <div style={{gridColumn:"1/-1",textAlign:"center",padding:60,color:C.textLight,fontFamily:"Jost, sans-serif"}}>Aucun article disponible dans cette catégorie.</div>
@@ -658,6 +841,17 @@ function ClientShop() {
         <button onClick={()=>window.dispatchEvent(new CustomEvent("openAdmin"))} style={{marginTop:24,background:"none",border:"none",color:"#3a2a20",fontSize:9,letterSpacing:2,cursor:"pointer",fontFamily:"Jost, sans-serif",textTransform:"uppercase"}}>Administration</button>
       </footer>
       {ordering&&<OrderForm product={ordering.prod} isCatalog={ordering.isCatalog} clientEmail={clientEmail} onClose={()=>setOrdering(null)} onConfirm={async(form)=>{ await handleOrder(ordering.prod, ordering.isCatalog, form); }}/>}
+      {cartOpen&&<CartModal cart={cart} onClose={()=>setCartOpen(false)} onRemove={id=>setCart(c=>c.filter(i=>i._cartId!==id))} onOrder={()=>{setCartOpen(false);setCartCheckout(true);}}/>}
+      {cartCheckout&&<CartOrderForm cart={cart} clientEmail={clientEmail} onClose={()=>setCartCheckout(false)} onConfirm={async(form)=>{await handleCartOrder(form);}}/>}
+      {sizePrompt&&(
+        <Modal title={`👟 Pointure — ${sizePrompt.name}`} onClose={()=>setSizePrompt(null)}>
+          <Field label="Votre pointure" value={sizeInput} onChange={e=>setSizeInput(e.target.value)} placeholder="Ex : 38, 39, 40…" hint={sizePrompt.sizes&&sizePrompt.sizes.length>0?`Tailles disponibles : ${sizePrompt.sizes.join(", ")}`:"Indiquez votre pointure européenne."} required/>
+          <div style={{display:"flex",gap:10,justifyContent:"flex-end",marginTop:8}}>
+            <Btn variant="ghost" onClick={()=>setSizePrompt(null)}>Annuler</Btn>
+            <Btn onClick={()=>{addToCart(sizePrompt,true,sizeInput||null);setSizePrompt(null);setSizeInput("");}} disabled={!sizeInput.trim()}>Ajouter au panier</Btn>
+          </div>
+        </Modal>
+      )}
       {myOrdersOpen&&<MyOrders onClose={()=>setMyOrdersOpen(false)} prefillEmail={clientEmail}/>}
       {customRequestOpen&&<CustomRequestForm onClose={()=>setCustomRequestOpen(false)} onConfirm={handleCustomRequest}/>}
       {contactOpen&&(
