@@ -731,8 +731,11 @@ function ClientShop() {
       date:        new Date().toISOString().slice(0,10),
       iscustom:    false,
     };
-    const {error} = await supabase.from("orders").insert([orderData]);
+    console.log("orderData à insérer:", orderData);
+    const {data, error} = await supabase.from("orders").insert([orderData]).select();
+    console.log("résultat insert:", data, error);
     if(error){console.error("handleCartOrder:",error);alert("Erreur lors de la commande : "+error.message);return false;}
+    if(!data||data.length===0){console.error("insert sans retour",{data,error});alert("Insert sans confirmation Supabase.");return false;}
     for(const item of stockItems){
       await supabase.from("stock").update({available:false}).eq("id",item.id);
     }
