@@ -711,13 +711,6 @@ function ClientShop() {
     const refs = [...new Set(cart.map(i=>i.ref||"").filter(Boolean))].join(", ");
     const depositpaid = cart.reduce((s,i)=>s+(i._isCatalog?(i.deposit||0):i.price),0);
     const totalprice = cart.reduce((s,i)=>s+(i._isCatalog?(i.estimatedprice||0):i.price),0);
-    const itemsJson = cart.map(i=>({
-      name:i.name, brand:i.brand,
-      price:i._isCatalog?(i.deposit||0):i.price,
-      ref:i.ref||"", img:i.img||null,
-      category:i.category, iscatalog:i._isCatalog,
-      clientsize:i._clientSize||null,
-    }));
     const orderData = {
       order_id:    uid(),
       prenom:      form.prenom,
@@ -737,7 +730,6 @@ function ClientShop() {
       status:      "paiement_a_verifier",
       date:        new Date().toISOString().slice(0,10),
       iscustom:    false,
-      items:       JSON.stringify(itemsJson),
     };
     const {error} = await supabase.from("orders").insert([orderData]);
     if(error){console.error("handleCartOrder:",error);alert("Erreur lors de la commande : "+error.message);return false;}
