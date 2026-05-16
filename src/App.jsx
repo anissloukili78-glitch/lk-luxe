@@ -329,7 +329,7 @@ function CartOrderForm({ cart, clientEmail, onClose, onConfirm }) {
             <div style={{fontSize:13,color:C.textMid,lineHeight:1.8,fontFamily:"Jost, sans-serif"}}>Revenez ici après avoir réglé <strong style={{color:C.accent}}>{fmt(amount)}</strong>.</div>
           </div>
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            <Btn variant="green" full onClick={async()=>{setLoading(true);await onConfirm(form);setLoading(false);setStep(5);}} disabled={loading}>{loading?"Enregistrement…":"✓ J'ai effectué mon paiement"}</Btn>
+            <Btn variant="green" full onClick={async()=>{setLoading(true);const ok=await onConfirm(form);setLoading(false);if(ok)setStep(5);}} disabled={loading}>{loading?"Enregistrement…":"✓ J'ai effectué mon paiement"}</Btn>
             <Btn variant="ghost" full onClick={()=>window.open(form.paiement==="revolut"?REVOLUT_LINK:PAYPAL_LINK,"_blank")}>Rouvrir le lien</Btn>
             <Btn variant="ghost" full onClick={()=>setStep(3)}>← Retour</Btn>
           </div>
@@ -711,22 +711,43 @@ function ClientShop() {
     const refs = [...new Set(cart.map(i=>i.ref||"").filter(Boolean))].join(", ");
     const depositpaid = cart.reduce((s,i)=>s+(i._isCatalog?(i.deposit||0):i.price),0);
     const totalprice = cart.reduce((s,i)=>s+(i._isCatalog?(i.estimatedprice||0):i.price),0);
-    const itemsJson = cart.map(i=>({name:i.name,brand:i.brand,price:i._isCatalog?(i.deposit||0):i.price,ref:i.ref||"",img:i.img||null,category:i.category,isCatalog:i._isCatalog,clientSize:i._clientSize||null}));
+    const itemsJson = cart.map(i=>({
+      name:i.name, brand:i.brand,
+      price:i._isCatalog?(i.deposit||0):i.price,
+      ref:i.ref||"", img:i.img||null,
+      category:i.category, iscatalog:i._isCatalog,
+      clientsize:i._clientSize||null,
+    }));
     const orderData = {
-      order_id:uid(),prenom:form.prenom,nom:form.nom,email:form.email.toLowerCase().trim(),tel:form.tel,
-      adresse:form.adresse,codepostal:form.codePostal,ville:form.ville,livraison:form.livraison,paiement:form.paiement,
-      product:productNames,ref:refs,type:stockItems.length>0?"stock":"catalog",
-      depositpaid,totalprice,status:"paiement_a_verifier",
-      date:new Date().toISOString().slice(0,10),iscustom:false,items:itemsJson,
+      order_id:    uid(),
+      prenom:      form.prenom,
+      nom:         form.nom,
+      email:       form.email.toLowerCase().trim(),
+      tel:         form.tel,
+      adresse:     form.adresse,
+      codepostal:  form.codePostal,
+      ville:       form.ville,
+      livraison:   form.livraison,
+      paiement:    form.paiement,
+      product:     productNames,
+      ref:         refs,
+      type:        stockItems.length>0?"stock":"catalog",
+      depositpaid,
+      totalprice,
+      status:      "paiement_a_verifier",
+      date:        new Date().toISOString().slice(0,10),
+      iscustom:    false,
+      items:       itemsJson,
     };
     const {error} = await supabase.from("orders").insert([orderData]);
-    if(error){console.error("handleCartOrder:",error);return;}
+    if(error){console.error("handleCartOrder:",error);alert("Erreur lors de la commande : "+error.message);return false;}
     for(const item of stockItems){
       await supabase.from("stock").update({available:false}).eq("id",item.id);
     }
     setStock(s=>s.filter(p=>!stockItems.find(i=>i.id===p.id)));
     if(!emailSet){setClientEmail(form.email.toLowerCase().trim());setEmailSet(true);}
     setCart([]);
+    return true;
   };
 
   const handleCustomRequest = async(form) => {
@@ -842,7 +863,7 @@ function ClientShop() {
       </footer>
       {ordering&&<OrderForm product={ordering.prod} isCatalog={ordering.isCatalog} clientEmail={clientEmail} onClose={()=>setOrdering(null)} onConfirm={async(form)=>{ await handleOrder(ordering.prod, ordering.isCatalog, form); }}/>}
       {cartOpen&&<CartModal cart={cart} onClose={()=>setCartOpen(false)} onRemove={id=>setCart(c=>c.filter(i=>i._cartId!==id))} onOrder={()=>{setCartOpen(false);setCartCheckout(true);}}/>}
-      {cartCheckout&&<CartOrderForm cart={cart} clientEmail={clientEmail} onClose={()=>setCartCheckout(false)} onConfirm={async(form)=>{await handleCartOrder(form);}}/>}
+      {cartCheckout&&<CartOrderForm cart={cart} clientEmail={clientEmail} onClose={()=>setCartCheckout(false)} onConfirm={handleCartOrder}/>}
       {sizePrompt&&(
         <Modal title={`👟 Pointure — ${sizePrompt.name}`} onClose={()=>setSizePrompt(null)}>
           <Field label="Votre pointure" value={sizeInput} onChange={e=>setSizeInput(e.target.value)} placeholder="Ex : 38, 39, 40…" hint={sizePrompt.sizes&&sizePrompt.sizes.length>0?`Tailles disponibles : ${sizePrompt.sizes.join(", ")}`:"Indiquez votre pointure européenne."} required/>
