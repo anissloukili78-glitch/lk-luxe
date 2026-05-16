@@ -737,7 +737,7 @@ function ClientShop() {
       status:      "paiement_a_verifier",
       date:        new Date().toISOString().slice(0,10),
       iscustom:    false,
-      items:       itemsJson,
+      items:       JSON.stringify(itemsJson),
     };
     const {error} = await supabase.from("orders").insert([orderData]);
     if(error){console.error("handleCartOrder:",error);alert("Erreur lors de la commande : "+error.message);return false;}
